@@ -88,3 +88,9 @@ Thumbs.db
 # Vite
 .vite/
 
+# Python + local artifacts
+.venv/
+__pycache__/
+slm_swap/models/
+slm_swap/raw_xlam/
+Fledgling/
