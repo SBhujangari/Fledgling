@@ -144,11 +144,14 @@ function buildResultsFromMastraPayload(
   const toolSteps = extractMastraToolCalls(payload, observation.id);
   steps.push(...toolSteps);
 
-  const completionText =
+  const completionTextCandidate =
     payload.text ??
     payload.steps?.[payload.steps.length - 1]?.text ??
-    payload.response?.messages?.[0]?.content?.map(extractContentText).filter(Boolean).join('\n') ??
-    undefined;
+    normalizeContent(payload.response?.messages?.[0]?.content)
+      .map(extractContentText)
+      .filter(Boolean)
+      .join('\n');
+  const completionText = completionTextCandidate && completionTextCandidate.length > 0 ? completionTextCandidate : undefined;
 
   const generationStep: GenerationStep = {
     type: 'generation',
@@ -177,8 +180,8 @@ function extractConversationMessages(payload: MastraGenerationMetadata): Convers
   const messages: ConversationMessage[] = [];
   for (const message of inputMessages) {
     if (message.role === 'system' || message.role === 'user') {
-      const contentText = message.content
-        ?.map(extractContentText)
+      const contentText = normalizeContent(message.content)
+        .map(extractContentText)
         .filter(Boolean)
         .join('\n');
       if (contentText) {
@@ -199,7 +202,13 @@ function extractMastraThoughts(payload: MastraGenerationMetadata, observationId?
   const thoughts: ThoughtStep[] = [];
 
   for (const step of steps) {
-    const thoughtText = step.reasoningText ?? step.text ?? step.content?.map(extractContentText).filter(Boolean).join('\n');
+    const thoughtText =
+      step.reasoningText ??
+      step.text ??
+      normalizeContent(step.content)
+        .map(extractContentText)
+        .filter(Boolean)
+        .join('\n');
     if (thoughtText) {
       thoughts.push({
         type: 'thought',
@@ -354,6 +363,18 @@ function extractContentText(part: { type?: string; text?: string } | undefined):
     return part.text;
   }
   return '';
+}
+
+function normalizeContent(
+  content: string | Array<{ type?: string; text?: string }> | undefined,
+): Array<{ type?: string; text?: string }> {
+  if (typeof content === 'string') {
+    return [{ type: 'text', text: content }];
+  }
+  if (Array.isArray(content)) {
+    return content;
+  }
+  return [];
 }
 
 interface MastraMessage {

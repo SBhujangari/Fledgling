@@ -26,6 +26,7 @@ export interface LangfuseObservation {
 export interface LangfuseTrace {
   id: string;
   name?: string;
+  status?: string;
   metadata?: Record<string, unknown> | null;
   timestamp?: string;
   createdAt?: string;
