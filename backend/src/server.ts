@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 
 import { fetchCompletedTraces } from './service/loader';
@@ -10,11 +10,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
 
-app.get('/api/traces', async (req, res) => {
+app.get('/api/traces', async (req: Request, res: Response) => {
   try {
     const updatedAfter = typeof req.query.updatedAfter === 'string' ? req.query.updatedAfter : undefined;
     const aggregate: TransformResult = {

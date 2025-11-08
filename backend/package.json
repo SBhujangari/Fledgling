@@ -1,8 +1,14 @@
 {
-  "name": "ai-atl-backend",
+  "name": "@fledgling/tracer",
   "version": "0.1.0",
   "private": true,
   "type": "commonjs",
+  "main": "dist/tracer/index.js",
+  "types": "dist/tracer/index.d.ts",
+  "files": [
+    "dist/tracer",
+    "dist/types"
+  ],
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc -p tsconfig.json",
@@ -10,11 +16,17 @@
   },
   "dependencies": {
     "@langfuse/client": "^4.4.1",
+    "@langfuse/otel": "^4.4.1",
+    "@langfuse/tracing": "^4.4.1",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-trace-node": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.0"
   }
