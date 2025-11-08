@@ -25,6 +25,9 @@ class Message:
     content: str
 
 
+DEFAULT_SLM_MODEL_PATH = "models/phi-4-mini"
+
+
 class SLMClient:
     """Loads a local SLM in 4-bit mode and serves greedy chat completions."""
 
@@ -34,7 +37,9 @@ class SLMClient:
         adapter_path: Optional[str] = None,
         max_new_tokens: int = 256,
     ):
-        self.model_path = model_path or os.getenv("SLM_MODEL_PATH")
+        self.model_path = (
+            model_path or os.getenv("SLM_MODEL_PATH") or DEFAULT_SLM_MODEL_PATH
+        )
         if not self.model_path:
             raise EnvironmentError("SLM_MODEL_PATH must be set or passed explicitly.")
         self.adapter_path = adapter_path
@@ -46,13 +51,17 @@ class SLMClient:
             bnb_4bit_use_double_quant=True,
             bnb_4bit_compute_dtype=torch.bfloat16,
         )
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_path, trust_remote_code=True
+        )
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_path,
             quantization_config=quant_config,
             device_map="auto",
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=True,
         )
         if self.adapter_path:
             if PeftModel is None:

@@ -4,25 +4,34 @@ Minimal, evaluation-first workflow to compare a local SLM against an Azure-hoste
 
 ## Prerequisites
 - Ubuntu + Python 3.11+
-- GPU with enough VRAM for 4-bit QLoRA (tested with 24 GB)
+- Four NVIDIA RTX 3090 GPUs (fine-tuning assumes all four are available)
 - Python deps (install once from the repo root via `pip install -r requirements.txt`):
-  - `torch`, `transformers`, `accelerate`, `bitsandbytes`
+  - `torch`, `transformers`, `accelerate`, `bitsandbytes`, `deepspeed`
   - `langfuse`, `openai`
   - `unsloth`, `datasets`, `trl`
-- Local SLM checkpoint downloaded into `slm_swap/models/` (default `qwen2.5-7b-instruct`)
-- Langfuse workspace with API keys
+- Local SLM checkpoint downloaded into `slm_swap/models/` (default `phi-4-mini`)
+- Langfuse workspace with API keys (set `LANGFUSE_DISABLED=1` only for local dry-runs)
 
 ## Environment Variables
 Export before running anything:
 ```
 export AZURE_ENDPOINT="https://<endpoint>/openai/deployments/<deployment>"
+export AZURE_DEPLOYMENT="chat"
 export AZURE_API_KEY="..."
 export AZURE_API_VERSION="2024-02-15-preview"
-export SLM_MODEL_PATH="slm_swap/models/qwen2.5-7b-instruct"
+export SLM_MODEL_PATH="slm_swap/models/phi-4-mini"
 export LANGFUSE_PUBLIC_KEY="..."
 export LANGFUSE_SECRET_KEY="..."
 export LANGFUSE_HOST="https://cloud.langfuse.com"
+# Optional local bypass
+# export LANGFUSE_DISABLED=1
 ```
+
+## Local SLM Download (Phi-4-mini)
+```
+huggingface-cli download microsoft/phi-4-mini --local-dir slm_swap/models/phi-4-mini
+```
+The `slm_client` loads the checkpoint with `device_map="auto"` and 4-bit quantization so inference is automatically sharded across the four GPUs.
 
 ## Dataset Preparation
 The tiny splits must be derived from the gated `Salesforce/xlam-function-calling-60k` dataset.
@@ -76,13 +85,23 @@ python compare.py --track toolcall --azure 05_eval/toolcall_azure_test.json --sl
 ```
 The script prints `FINE_TUNE=1` if the SLM trails Azure on any core metric by more than `delta`, logs a Langfuse event, and exits with status 10 to signal downstream automation.
 
-## Conditional Fine-Tune (Unsloth QLoRA)
-Run *only* when the compare step requests it.
+## Conditional Fine-Tune (Unsloth QLoRA on 4×3090)
+Run *only* when the compare step requests it. Launch with `accelerate` (preferred) or `torchrun` so all GPUs participate; the trainer automatically wires `accelerate_config/deepspeed_zero2.json` for ZeRO-2 sharding.
 ```bash
-python train_unsloth.py --track structured --train 02_dataset/structured/train.jsonl --val 02_dataset/structured/val.jsonl --out 04_ft/adapter_structured
-python train_unsloth.py --track toolcall --train 02_dataset/toolcall/train.jsonl --val 02_dataset/toolcall/val.jsonl --out 04_ft/adapter_toolcall
+# Accelerate example
+accelerate launch --config_file accelerate_config/phi4_4gpu.yaml \
+  train_unsloth.py --track structured \
+  --train 02_dataset/structured/train.jsonl \
+  --val 02_dataset/structured/val.jsonl \
+  --out 04_ft/adapter_structured
+
+# Torchrun alternative
+torchrun --nproc_per_node=4 train_unsloth.py --track toolcall \
+  --train 02_dataset/toolcall/train.jsonl \
+  --val 02_dataset/toolcall/val.jsonl \
+  --out 04_ft/adapter_toolcall
 ```
-Fixed hyperparameters: 4-bit load, LoRA `r=64`, `alpha=16`, `dropout=0.1`, `lr=2e-4`, `epochs=1`, `seq_len≈2048`. Training traces capture dataset paths, hyperparameters, and adapter save location.
+Fixed hyperparameters: 4-bit load, LoRA `r=64`, `alpha=16`, `dropout=0.1`, `lr=2e-4`, `epochs=1`, `seq_len≈2048`. Training traces capture dataset paths, hyperparameters, adapter path, and multi-GPU strategy.
 
 ## Re-evaluation After Fine-Tune
 Reuse `eval.py` with the same commands, pointing `SLM_MODEL_PATH` to the base checkpoint and loading the generated adapter (see script flag). Store metrics under `05_eval/` (e.g., `structured_slm_ft_test.json`) and trace every run.
@@ -94,7 +113,7 @@ Reuse `eval.py` with the same commands, pointing `SLM_MODEL_PATH` to the base ch
 Mastra can call the local SLM by reusing the `slm_client` helper: construct the same `[system, user]` messages used for evaluation, load adapters if present, and surface the raw text response—no routing, fallbacks, or judges in v0.
 
 ## Langfuse Requirement
-No eval or training command should run without `LANGFUSE_*` configured. Expect traces for:
+No eval or training command should run without `LANGFUSE_*` configured (unless explicitly bypassed via `LANGFUSE_DISABLED=1` during local smoke tests). Expect traces for:
 - Every `eval.py` invocation (structured/toolcall × Azure/SLM × splits)
 - Every `train_unsloth.py` invocation
 - Every `compare.py` decision event

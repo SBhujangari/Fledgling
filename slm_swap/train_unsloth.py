@@ -10,6 +10,7 @@ from typing import Dict, List
 from datasets import Dataset
 from langfuse_helpers import langfuse_trace
 from prompts import get_system_prompt
+from slm_client import DEFAULT_SLM_MODEL_PATH
 from unsloth import FastLanguageModel
 from transformers import TrainingArguments
 from trl import SFTTrainer
@@ -56,8 +57,15 @@ def main():
     parser.add_argument("--out", required=True, help="Directory to store adapters.")
     parser.add_argument(
         "--model",
-        default=os.getenv("SLM_MODEL_PATH"),
-        help="Base SLM path (defaults to SLM_MODEL_PATH).",
+        default=os.getenv("SLM_MODEL_PATH", DEFAULT_SLM_MODEL_PATH),
+        help="Base SLM path (defaults to SLM_MODEL_PATH or phi-4-mini).",
+    )
+    parser.add_argument(
+        "--deepspeed-config",
+        default=os.path.join(
+            os.path.dirname(__file__), "accelerate_config", "deepspeed_zero2.json"
+        ),
+        help="Path to DeepSpeed ZeRO config (set empty to disable).",
     )
     args = parser.parse_args()
 
@@ -111,6 +119,9 @@ def main():
             save_strategy="no",
             report_to="none",
             output_dir=args.out,
+            gradient_checkpointing=True,
+            ddp_find_unused_parameters=False,
+            deepspeed=args.deepspeed_config or None,
         )
 
         trainer = SFTTrainer(

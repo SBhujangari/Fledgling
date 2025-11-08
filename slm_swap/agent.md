@@ -10,7 +10,7 @@ Only fine-tune the SLM if it underperforms the hosted LLM.
 ## Constraints
 - OS: Ubuntu
 - Hosted LLM (teacher for baseline eval): Azure AI (OpenAI-compatible chat deployment of an open-source instruct model)
-- Local SLM (student): downloaded checkpoint (default path: `slm_swap/models/qwen2.5-7b-instruct`)
+- Local SLM (student): downloaded checkpoint (default path: `slm_swap/models/phi-4-mini`)
 - Fine-tuning: Unsloth QLoRA (only if needed)
 - Langfuse: **MANDATORY** — at minimum one trace per eval run and per train run (record start/end + dataset/metrics paths)
 - No fallbacks, routers, SAG/FTP, schema validators, or judges in v0
@@ -52,7 +52,7 @@ Initial source: tiny splits derived from `Salesforce/xlam-function-calling-60k` 
 
 ## Models
 - Hosted LLM (Azure): open-source instruct model via Azure chat completions, temperature = 0.
-- SLM (local): load from `SLM_MODEL_PATH` in 4-bit, greedy decoding.
+- SLM (local): load from `SLM_MODEL_PATH` (default Phi-4-mini) in 4-bit, greedy decoding.
 
 ## Evaluation (baseline first)
 Run on the test split for each track and each model. Record a Langfuse trace per run.
@@ -73,7 +73,7 @@ Compare Azure vs SLM per track. If the SLM is worse than Azure on any core metri
 
 ## Fine-Tuning (only if needed)
 - Method: Unsloth QLoRA, base = `SLM_MODEL_PATH`.
-- Fixed settings: 4-bit load, LoRA `r=64`, `alpha=16`, `dropout=0.1`, `lr=2e-4`, `epochs=1`, `seq_len≈2048`.
+- Fixed settings: 4-bit load, LoRA `r=64`, `alpha=16`, `dropout=0.1`, `lr=2e-4`, `epochs=1`, `seq_len≈2048`, launched with multi-GPU parallelism (4×3090 recommended via `accelerate launch --config_file accelerate_config/phi4_4gpu.yaml`).
 - Input: `train.jsonl` / `val.jsonl` with the same prompt → completion format.
 - Outputs: LoRA adapters (`04_ft/adapter_structured` and `04_ft/adapter_toolcall`).
 - Re-run the same evaluation on test after training (new Langfuse trace).
