@@ -1,0 +1,1 @@
+{"prompt":"Return JSON with fields region, metric, threshold: For EU-West latency threshold should be 120ms on API metric.","completion":"{\"region\":\"eu-west\",\"metric\":\"api_latency\",\"threshold_ms\":120}"}

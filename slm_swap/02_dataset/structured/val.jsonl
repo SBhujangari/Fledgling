@@ -1,0 +1,1 @@
+{"prompt":"Convert incident note to JSON keys service, impact, eta: Status page jobs delayed 12 min for analytics service, ETA 10 min.","completion":"{\"service\":\"analytics\",\"impact\":\"delayed_status_jobs\",\"eta_minutes\":10}"}

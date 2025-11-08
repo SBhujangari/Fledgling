@@ -1,0 +1,3 @@
+{"prompt":"Return JSON with keys product, issue_type, urgency for this ticket: Flex CRM quote workflow fails when saving.","completion":"{\"product\":\"Flex CRM\",\"issue_type\":\"workflow_error\",\"urgency\":\"high\"}"}
+{"prompt":"Normalize meeting request into JSON fields meeting_type, date, attendees: Team wants roadmap sync on 2024-09-18 with PM + Eng leads.","completion":"{\"meeting_type\":\"roadmap_sync\",\"date\":\"2024-09-18\",\"attendees\":[\"product_manager\",\"engineering_lead\"]}"}
+{"prompt":"Map inventory update into JSON keys sku, status, quantity: SKU QT-990 awaiting inbound of 24 units, status pending_receipt.","completion":"{\"sku\":\"QT-990\",\"status\":\"pending_receipt\",\"quantity\":24}"}

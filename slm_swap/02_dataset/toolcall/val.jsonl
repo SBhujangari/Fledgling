@@ -1,0 +1,1 @@
+{"prompt":"Tool signature: adjust_credit(account_id:str, amount:int). Request: Credit 25 units to AC-55.","completion":"<tool_call name=\"adjust_credit\">{\"account_id\":\"AC-55\",\"amount\":25}</tool_call>"}

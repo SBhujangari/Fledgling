@@ -1,0 +1,6 @@
+.venv/
+.env
+__pycache__/
+slm_swap/models/
+slm_swap/raw_xlam/
+Fledgling/

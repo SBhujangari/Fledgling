@@ -1,0 +1,1 @@
+{"prompt":"Tool signature: create_brief(team:str, goal:str). Request: Draft launch brief for mobile growth goal 'activate more trial teams'.","completion":"<tool_call name=\"create_brief\">{\"team\":\"mobile\",\"goal\":\"activate more trial teams\"}</tool_call>"}

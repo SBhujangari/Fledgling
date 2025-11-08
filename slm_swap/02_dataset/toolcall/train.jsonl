@@ -1,0 +1,3 @@
+{"prompt":"Use <tool_call> to schedule a call. Tool signature: schedule_call(name:str, day:str, hour:str). Request: Book sync with Nina tomorrow at 09:00.","completion":"<tool_call name=\"schedule_call\">{\"name\":\"Nina\",\"day\":\"tomorrow\",\"hour\":\"09:00\"}</tool_call>"}
+{"prompt":"Tool signature: file_rma(order_id:str, reason:str). Request: Start RMA for order 88-100 because screen shatters.","completion":"<tool_call name=\"file_rma\">{\"order_id\":\"88-100\",\"reason\":\"screen_shattered\"}</tool_call>"}
+{"prompt":"Tool signature: escalate_ticket(case_id:str, severity:str). Request: Escalate case C-7781, major outage.","completion":"<tool_call name=\"escalate_ticket\">{\"case_id\":\"C-7781\",\"severity\":\"major_outage\"}</tool_call>"}
