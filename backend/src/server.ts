@@ -3,6 +3,8 @@ import cors from 'cors';
 
 import { fetchCompletedTraces } from './service/loader';
 import { transformTraces, type TransformResult } from './service/transformer';
+import { parseTraceToSample } from './parsers/otelParser';
+import type { FinetuneSample } from './types/finetune';
 
 const app = express();
 app.use(cors());
@@ -20,15 +22,23 @@ app.get('/api/traces', async (req, res) => {
       observations: [],
       generations: [],
     };
+    const samples: FinetuneSample[] = [];
 
     for await (const page of fetchCompletedTraces({ updatedAfter })) {
       const transformed = transformTraces(page);
       aggregate.runs.push(...transformed.runs);
       aggregate.observations.push(...transformed.observations);
       aggregate.generations.push(...transformed.generations);
+
+      for (const trace of page) {
+        const sample = parseTraceToSample(trace);
+        if (sample) {
+          samples.push(sample);
+        }
+      }
     }
 
-    res.json(aggregate);
+    res.json({ ...aggregate, samples });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: message });
