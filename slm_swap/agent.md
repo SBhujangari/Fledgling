@@ -33,9 +33,20 @@ slm_swap/
 ## Environment
 - `AZURE_ENDPOINT` — `https://<endpoint>/openai/deployments/<deployment>`
 - `AZURE_API_KEY`
-- `AZURE_API_VERSION` (e.g., `2024-02-15-preview`)
-- `SLM_MODEL_PATH` (default `slm_swap/models/qwen2.5-7b-instruct`)
+- `AZURE_API_VERSION` (e.g., `2024-05-01-preview`)
+- `SLM_MODEL_PATH` (default `slm_swap/models/phi-4-mini`)
 - Langfuse (required): `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`
+
+Use the canonical Azure form `https://<resource>.openai.azure.com/openai/deployments/<deployment>` whenever possible. If you instead rely on `.../models/chat/completions`, confirm that the endpoint actually exists for your resource and pass the deployment name via `AZURE_DEPLOYMENT`; otherwise Azure responds with `DeploymentNotFound`.
+
+## Determinism and Reproducibility
+All evaluation and training runs enforce strict determinism to ensure reproducible results:
+- **Random seeds**: Fixed at 42 for Python `random`, NumPy, PyTorch (CPU/CUDA), and transformers.
+- **SLM inference**: Model in `.eval()` mode (dropout disabled), greedy decoding (`do_sample=False`), `temperature=0`, `top_p=1.0`, `top_k=0`, CUDA deterministic operations enabled.
+- **Azure LLM**: `temperature=0`, `seed=42` passed to API for reproducible sampling.
+- **Environment**: `PYTHONHASHSEED=42`, `CUBLAS_WORKSPACE_CONFIG=:4096:8`, `torch.use_deterministic_algorithms=True`.
+
+This guarantees bit-for-bit identical outputs across runs given the same inputs, hardware, and software versions.
 
 ## Data (row format)
 Two tracks; each row has exactly `prompt` and `completion`.
@@ -52,7 +63,7 @@ Initial source: tiny splits derived from `Salesforce/xlam-function-calling-60k` 
 
 ## Models
 - Hosted LLM (Azure): open-source instruct model via Azure chat completions, temperature = 0.
-- SLM (local): load from `SLM_MODEL_PATH` (default Phi-4-mini) in 4-bit, greedy decoding.
+- SLM (local): load from `SLM_MODEL_PATH` (default Phi-4-mini) in 8-bit, greedy decoding.
 
 ## Evaluation (baseline first)
 Run on the test split for each track and each model. Record a Langfuse trace per run.
@@ -73,7 +84,7 @@ Compare Azure vs SLM per track. If the SLM is worse than Azure on any core metri
 
 ## Fine-Tuning (only if needed)
 - Method: Unsloth QLoRA, base = `SLM_MODEL_PATH`.
-- Fixed settings: 4-bit load, LoRA `r=64`, `alpha=16`, `dropout=0.1`, `lr=2e-4`, `epochs=1`, `seq_len≈2048`, launched with multi-GPU parallelism (4×3090 recommended via `accelerate launch --config_file accelerate_config/phi4_4gpu.yaml`).
+- Fixed settings: 8-bit load, LoRA `r=64`, `alpha=16`, `dropout=0.1`, `lr=2e-4`, `epochs=1`, `seq_len≈2048`, launched with multi-GPU parallelism (4×3090 recommended via `accelerate launch --config_file accelerate_config/phi4_4gpu.yaml`).
 - Input: `train.jsonl` / `val.jsonl` with the same prompt → completion format.
 - Outputs: LoRA adapters (`04_ft/adapter_structured` and `04_ft/adapter_toolcall`).
 - Re-run the same evaluation on test after training (new Langfuse trace).

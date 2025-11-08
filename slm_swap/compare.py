@@ -9,8 +9,21 @@ from typing import Dict
 from langfuse_helpers import log_decision_event
 
 TRACK_METRICS = {
-    "structured": ("json_valid_rate", "exact_match_rate"),
-    "toolcall": ("valid_call_rate", "name_match_rate", "args_exact_rate"),
+    "structured": (
+        "json_valid_rate",
+        "exact_match_rate",
+        "field_precision",
+        "field_recall",
+        "field_f1",
+    ),
+    "toolcall": (
+        "valid_call_rate",
+        "name_match_rate",
+        "args_exact_rate",
+        "args_precision",
+        "args_recall",
+        "args_f1",
+    ),
 }
 
 

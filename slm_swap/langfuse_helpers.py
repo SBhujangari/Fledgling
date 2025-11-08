@@ -8,9 +8,14 @@ from typing import Any, Dict, Optional
 
 from langfuse import Langfuse
 
+from env_loader import ensure_env_loaded
+
+ensure_env_loaded()
+
 _REQUIRED_ENV = ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_HOST")
 _langfuse_singleton: Optional[Langfuse] = None
-_DISABLED = os.getenv("LANGFUSE_DISABLED", "").lower() in ("1", "true", "yes")
+def _is_disabled() -> bool:
+    return os.getenv("LANGFUSE_DISABLED", "").lower() in ("1", "true", "yes")
 
 
 def _missing_env() -> list[str]:
@@ -19,7 +24,7 @@ def _missing_env() -> list[str]:
 
 def get_langfuse() -> Langfuse:
     """Return a memoized Langfuse client, enforcing required environment variables."""
-    if _DISABLED:
+    if _is_disabled():
         raise RuntimeError("Langfuse usage is disabled via LANGFUSE_DISABLED.")
     global _langfuse_singleton
     missing = _missing_env()
@@ -46,7 +51,7 @@ class _NoopTrace:
 @contextmanager
 def langfuse_trace(name: str, metadata: Optional[Dict[str, Any]] = None):
     """Context manager that records start/end for a Langfuse trace."""
-    if _DISABLED:
+    if _is_disabled():
         yield _NoopTrace(metadata=metadata)
         return
 
@@ -68,7 +73,7 @@ def log_decision_event(
     level: str = "INFO",
 ):
     """Log a Langfuse event for compare decisions."""
-    if _DISABLED:
+    if _is_disabled():
         return
     client = get_langfuse()
     client.event(name=name, metadata=metadata or {}, level=level)

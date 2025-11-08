@@ -1,4 +1,8 @@
-AGENT.md — SLM Swap v0 (Evaluation-First, Minimal)
+AGENT.md — LLM to SLM Swap in Agent Architecture
+
+Note: Claude will NOT include itself in git commits
+
+
 Goal
 
 Decide if a local SLM can replace a hosted LLM for:
@@ -12,6 +16,8 @@ Only fine-tune if the SLM underperforms the hosted LLM.
 Constraints
 
 OS: Ubuntu
+
+commit early and often
 
 Hosted LLM (teacher for baseline eval): Azure AI (OpenAI-compatible chat deployment of an open-source instruct model)
 
@@ -45,7 +51,23 @@ AZURE_API_VERSION (e.g., 2024-02-15-preview)
 
 SLM_MODEL_PATH (default slm_swap/models/qwen2.5-7b-instruct)
 
+> When running inside `slm_swap/`, point `SLM_MODEL_PATH` at `models/<checkpoint>` (or use an absolute path). Adding another `slm_swap/` prefix creates a nonexistent `slm_swap/slm_swap/...` folder and the loader will fail fast.
+
 Langfuse (required): LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
+
+Determinism and Reproducibility
+
+All evaluation and training runs enforce strict determinism:
+
+Random seeds: Fixed at 42 for Python random, NumPy, PyTorch (CPU/CUDA), and transformers.
+
+SLM inference: Model in eval mode (dropout disabled), greedy decoding (do_sample=False), temperature=0, top_p=1.0, top_k=0, CUDA deterministic operations enabled.
+
+Azure LLM: temperature=0, seed=42 passed to API for reproducible sampling.
+
+Environment: PYTHONHASHSEED=42, CUBLAS_WORKSPACE_CONFIG=:4096:8, torch.use_deterministic_algorithms=True.
+
+This ensures bit-for-bit identical outputs across runs given the same inputs, hardware, and software versions.
 
 Data (row format)
 
@@ -62,15 +84,21 @@ completion: exactly one wrapper
 
 Initial source: small splits derived from Salesforce/xlam-function-calling-60k. Keep splits small and consistent.
 
+For the first smoke tests, run `python run_first_tests.py` inside `slm_swap/` to resample 50 **distinct** prompts per track and automatically launch the live evaluation dashboard for Structured and Toolcall runs. This keeps the datasets tiny while still logging Langfuse traces.
+
 Models
 
-Hosted LLM (Azure): open-source instruct model via Azure chat completions, temperature=0.
+Hosted LLM (Azure): open-source instruct model via Azure chat completions, temperature=0, seed=42 for determinism.
 
-SLM (local): load from SLM_MODEL_PATH in 4-bit, greedy decoding.
+SLM (local): load from SLM_MODEL_PATH in 8-bit, greedy decoding (do_sample=False, temperature=0, top_p=1.0, top_k=0), eval mode, seed=42 for determinism.
 
 Evaluation (baseline first)
 
 Run on the test split for each track and each model. Record a Langfuse trace per run.
+
+SLM evaluation uses batched inference (default batch_size=8) to process multiple examples in parallel across 4 GPUs for maximum throughput. The model is tensor-parallelized across GPUs (layers distributed), and batching enables concurrent processing.
+
+Use `live_compare.py` when you need real-time visibility into Azure vs SLM metrics; it streams per-example progress, logs Langfuse traces with `mode=live`, and can optionally persist the same JSON outputs as `eval.py`.
 
 Structured metrics
 
@@ -97,7 +125,7 @@ Fine-Tuning (only if needed)
 
 Method: Unsloth QLoRA, base = SLM_MODEL_PATH.
 
-Fixed settings: 4-bit load, LoRA r=64, alpha=16, dropout=0.1, lr=2e-4, 1 epoch, seq_len≈2048.
+Fixed settings: 8-bit load, LoRA r=64, alpha=16, dropout=0.1, lr=2e-4, 1 epoch, seq_len≈2048.
 
 Input: train.jsonl / val.jsonl with the same prompt → completion format.
 
@@ -108,6 +136,16 @@ Outputs: LoRA adapters:
 04_ft/adapter_toolcall
 
 Re-run the same evaluation on test after training (new Langfuse trace).
+
+Multi-GPU Training Strategies
+
+Two options for training both tracks:
+
+Sequential (train_sequential.sh): Train structured then toolcall using all 4 GPUs per model. Lower communication overhead, better GPU utilization per model, but 2x wallclock time.
+
+Parallel (train_parallel.sh): Train both models simultaneously using 2 GPUs each. Halves wallclock time but may have slightly slower per-model training.
+
+For small datasets (<10k examples), parallel training typically completes faster overall despite lower per-GPU efficiency. Run ./train_parallel.sh for default parallel execution or ./train_sequential.sh for sequential.
 
 Integration (Mastra)
 
