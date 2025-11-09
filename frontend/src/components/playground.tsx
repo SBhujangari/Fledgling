@@ -210,7 +210,7 @@ export function Playground() {
               </div>
             ) : (
               <div className="min-h-[400px] flex items-center justify-center text-muted-foreground border border-border rounded-lg bg-background/50">
-                <p>LLM response will appear here</p>
+                <p className="text-lg">LLM response will appear here</p>
               </div>
             )}
           </div>
@@ -241,7 +241,7 @@ export function Playground() {
               </div>
             ) : (
               <div className="min-h-[400px] flex items-center justify-center text-muted-foreground border border-border rounded-lg bg-background/50">
-                <p>SLM response will appear here</p>
+                <p className="text-lg">SLM response will appear here</p>
               </div>
             )}
           </div>
@@ -253,7 +253,7 @@ export function Playground() {
             placeholder="Enter your prompt to compare LLM and SLM outputs..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            className="min-h-24 flex-1 bg-background text-foreground border-border w-full"
+            className="min-h-24 flex-1 bg-background text-foreground border-border w-full text-lg placeholder:text-lg"
           />
           <Button 
             onClick={handleSubmit} 

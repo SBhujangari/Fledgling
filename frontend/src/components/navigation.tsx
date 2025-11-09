@@ -6,10 +6,7 @@ export function Navigation() {
   const location = useLocation()
 
   const isActive = (path: string) => {
-    if (path === "/") {
-      return location.pathname === "/"
-    }
-    return location.pathname.startsWith(path)
+    return location.pathname === path || location.pathname.startsWith(path + "/")
   }
 
   return (
@@ -21,11 +18,11 @@ export function Navigation() {
             <span className="text-xl font-semibold text-foreground">Fledgling</span>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
-            <Link
-              to="/"
+            <Link 
+              to="/dashboard" 
               className={`text-sm font-medium transition-colors ${
-                isActive("/")
-                  ? "text-foreground"
+                isActive("/dashboard") 
+                  ? "text-foreground" 
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
