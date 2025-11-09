@@ -54,6 +54,20 @@ export interface AgentResponse {
   accuracy: number | null
   model_costs_saved: number | null
   tool_ids: string[]
+  is_training?: boolean
+  iterations?: number
+  training_data_size?: number
+}
+
+export interface RunResponse {
+  id: string
+  agentId: string
+  name: string
+  status: 'queued' | 'running' | 'completed' | 'failed'
+  queuedAt: string
+  completedAt: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export interface TracesResponse {

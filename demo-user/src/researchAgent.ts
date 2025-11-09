@@ -48,7 +48,7 @@ setTimeout(() => {
     name: 'Research Strategist',
     taskDescription: 'Brainstorms and evaluates product bets with dataset-backed reasoning',
     instructions: RESEARCH_INSTRUCTIONS,
-    originalLLM: 'openai/gpt-5-medium',
+    originalLLM: 'openai/gpt-4o',
     tags: ['demo', 'research'],
     tools: mapMastraTools(RESEARCH_AGENT_ID, researchTools),
   });

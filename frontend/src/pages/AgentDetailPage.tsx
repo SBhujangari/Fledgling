@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts"
 import { ArrowLeft, Cpu, Database, Activity, FileText } from "lucide-react"
 import { useAgents } from "@/hooks/useAgents"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 
 // Mock data for cost comparison (per agent)
@@ -51,6 +51,7 @@ const getMockAccuracyData = () => [
 export default function AgentDetailPage() {
   const { agentId } = useParams<{ agentId: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data: agentsData, isLoading, error } = useAgents()
 
   const agent = agentsData?.find(a => a.id === agentId)
@@ -60,6 +61,21 @@ export default function AgentDetailPage() {
     queryFn: () => api.getTools(agentId),
     enabled: !!agentId && !!agent,
   })
+
+  const createRunMutation = useMutation({
+    mutationFn: (name: string) => api.createRun({ agentId: agentId!, name }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["runs", agentId] })
+      queryClient.invalidateQueries({ queryKey: ["agents"] })
+      navigate(`/agent/${agentId}/runs`)
+    },
+  })
+
+  const handleFinetune = () => {
+    if (!agent || !agentId) return
+    const runName = `Run ${new Date().toLocaleDateString()}`
+    createRunMutation.mutate(runName)
+  }
 
   if (isLoading) {
     return (
@@ -106,12 +122,21 @@ export default function AgentDetailPage() {
               <h1 className="text-3xl font-bold tracking-tight text-foreground">{agent.name}</h1>
               <p className="text-muted-foreground mt-1">Performance metrics & Finetuning Config</p>
             </div>
-            <Button
-              onClick={() => navigate(`/playground?llm=${encodeURIComponent(agent.original_llm)}&slm=${encodeURIComponent(agent.slm_model)}`)}
-              variant="default"
-            >
-              Try Out
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleFinetune}
+                variant={agent.is_training ? "secondary" : "default"}
+                disabled={agent.is_training || createRunMutation.isPending}
+              >
+                {agent.is_training ? "Training..." : createRunMutation.isPending ? "Creating..." : "Finetune"}
+              </Button>
+              <Button
+                onClick={() => navigate(`/playground?llm=${encodeURIComponent(agent.original_llm)}&slm=${encodeURIComponent(agent.slm_model)}`)}
+                variant="default"
+              >
+                Try Out
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -227,24 +252,34 @@ export default function AgentDetailPage() {
                 Training Status
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Currently Training...
+                {agent.is_training ? "Currently Training..." : "Training History"}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label className="text-sm text-muted-foreground">Status</Label>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="size-2 rounded-full bg-accent animate-pulse" />
-                  <p className="text-foreground">Active fine-tuning in progress</p>
+                  {agent.is_training ? (
+                    <>
+                      <div className="size-2 rounded-full bg-accent animate-pulse" />
+                      <p className="text-foreground">Active fine-tuning in progress</p>
+                    </>
+                  ) : (
+                    <p className="text-foreground">Not currently training</p>
+                  )}
                 </div>
               </div>
               <div>
                 <Label className="text-sm text-muted-foreground">Iterations Completed</Label>
-                <p className="text-lg font-semibold text-foreground mt-1">2,847</p>
+                <p className="text-lg font-semibold text-foreground mt-1">
+                  {agent.iterations ?? 1}
+                </p>
               </div>
               <div>
                 <Label className="text-sm text-muted-foreground">Training Data Size</Label>
-                <p className="text-lg font-semibold text-foreground mt-1">18,542 samples</p>
+                <p className="text-lg font-semibold text-foreground mt-1">
+                  {(agent.training_data_size ?? 50).toLocaleString()} samples
+                </p>
               </div>
             </CardContent>
           </Card>

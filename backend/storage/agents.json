@@ -1,41 +1,56 @@
 {
   "agents": [
     {
-      "id": "demo-agent",
-      "name": "QA Agent",
-      "taskDescription": "Answers user questions with grounded recommendations",
-      "instructions": "You are a reasoning assistant. Reasoning Effort: High. Think hard and a lot when given a problem and try to employ a COT approach.\n1. Think through problem explicitly and break it down into smaller subtasks.\n2. Call the tool 'getLocation' to get the user's location if relevant to their request.\n3. After using tools, synthesize a concise final answer in 2-3 sentences referencing the retrieved location when relevant.\nReturn the final answer as normal assistant text (no tool syntax).",
-      "originalLLM": "openai/gpt-5-nano",
+      "id": "customer-service-agent",
+      "name": "Customer Service Orchestrator",
+      "taskDescription": "Handles customer service requests including returns, exchanges, order inquiries, delivery tracking, and refunds",
+      "instructions": "You are an expert customer service orchestrator agent for an online shipping company. Your role is to handle customer service requests including returns, exchanges, order inquiries, delivery tracking, and refunds.\n\nIMPORTANT: Use tools intelligently based on what the customer is asking. Only use the tools that are relevant to the specific request. Do not use multiple tools unless the workflow requires it.\n\nYour workflow should be:\n1. If customer mentions an order number/ID or asks about order details → use lookupOrder tool\n2. If customer mentions a tracking number or asks \"where is my package\" → use trackDelivery tool\n3. If customer claims they didn't receive a package → use checkDeliveryEvidence tool\n4. If customer requests a refund → FIRST use checkRefundPolicy to verify eligibility, THEN use processRefund if eligible\n5. If customer wants to replace/exchange an item → use checkReplacementPolicy tool\n6. For complex issues needing follow-up → use createCase tool\n\nAvailable tools (use these tools when relevant):\n- lookupOrder: Use this tool when a customer mentions an order number, order ID, or asks about their order status, items, or order information. Do not guess order details - use this tool to get accurate order data.\n- trackDelivery: Use this tool when a customer mentions a tracking number, asks \"where is my package\", \"when will it arrive\", or wants delivery status information. Do not guess delivery status - use this tool to get real-time tracking data.\n- checkDeliveryEvidence: Use this tool when a customer claims they did not receive their package, says \"it was never delivered\", or needs proof of delivery. This tool provides actual delivery proof data including photos and signatures.\n- checkRefundPolicy: Use this tool BEFORE processing any refund request to determine eligibility and refund amount. Never process a refund without checking policy first using this tool.\n- checkReplacementPolicy: Use this tool when a customer wants to exchange, replace, or get a new item. This tool provides replacement options, availability, and shipping times.\n- createCase: Use this tool for complex issues that require follow-up, escalation, or cannot be resolved immediately. This creates a tracked case with a case ID that the customer can reference.\n- processRefund: Use this tool to actually execute refund transactions. Only use AFTER confirming eligibility with checkRefundPolicy. This tool processes the refund and provides a confirmation number.\n\nBe professional, empathetic, and efficient. Use tools to get accurate information, but only use the tools that are relevant to the customer's specific request.",
+      "originalLLM": "openai/gpt-4o",
       "slmModel": "llama-3-8b",
       "tags": [
-        "demo",
-        "qa"
+        "customer-service",
+        "orchestrator",
+        "shipping"
       ],
       "lastTrainedModelPath": null,
+      "accuracy": 92,
+      "modelCostsSaved": 324.50,
       "toolIds": [
-        "demo-agent::getLocation"
+        "customer-service-agent::lookupOrder",
+        "customer-service-agent::trackDelivery",
+        "customer-service-agent::checkDeliveryEvidence",
+        "customer-service-agent::checkRefundPolicy",
+        "customer-service-agent::checkReplacementPolicy",
+        "customer-service-agent::createCase",
+        "customer-service-agent::processRefund"
       ],
-      "createdAt": "2025-11-09T05:48:07.425Z",
-      "updatedAt": "2025-11-09T05:48:07.425Z"
+      "iterations": 15,
+      "trainingDataSize": 784,
+      "createdAt": "2025-11-09T07:51:48.933Z",
+      "updatedAt": "2025-11-09T07:51:48.933Z"
     },
     {
       "id": "research-agent",
       "name": "Research Strategist",
       "taskDescription": "Brainstorms and evaluates product bets with dataset-backed reasoning",
       "instructions": "You are a research strategist. Evaluate the user's hypothesis, gather supporting info via tools, and return a structured recommendation with risks and next steps.",
-      "originalLLM": "openai/gpt-5-medium",
+      "originalLLM": "openai/gpt-4o",
       "slmModel": "llama-3-8b",
       "tags": [
         "demo",
         "research"
       ],
       "lastTrainedModelPath": null,
+      "accuracy": 5,
+      "modelCostsSaved": 2.5,
       "toolIds": [
         "research-agent::fetchDataset",
         "research-agent::writeMemo"
       ],
+      "iterations": 1,
+      "trainingDataSize": 50,
       "createdAt": "2025-11-09T05:48:07.425Z",
-      "updatedAt": "2025-11-09T05:48:07.425Z"
+      "updatedAt": "2025-11-09T07:52:15.200Z"
     }
   ]
 }

@@ -31,45 +31,16 @@ app.post('/query', async (req, res) => {
       response: text,
     });
   } catch (error) {
-    console.error('Agent execution error:', error);
+    console.error('Customer service agent execution error:', error);
     res.status(500).json({
-      error: 'Failed to execute agent',
-      message: error instanceof Error ? error.message : String(error),
-    });
-  }
-});
-
-app.post('/research', async (req, res) => {
-  const brief = typeof req.body?.brief === 'string' ? req.body.brief : req.body?.prompt;
-
-  if (!brief || typeof brief !== 'string') {
-    return res.status(400).json({ error: 'Missing or invalid "brief" field' });
-  }
-
-  try {
-    const { text } = await researchAgent.generate(brief, {
-      providerOptions: {
-        openai: {
-          reasoningEffort: 'medium',
-          reasoningSummary: 'auto',
-        },
-      },
-    });
-
-    res.json({
-      brief,
-      response: text,
-    });
-  } catch (error) {
-    console.error('Research agent execution error:', error);
-    res.status(500).json({
-      error: 'Failed to execute research agent',
+      error: 'Failed to execute customer service agent',
       message: error instanceof Error ? error.message : String(error),
     });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Demo server running on http://localhost:${PORT}`);
-  console.log(`📝 POST /query with { "task": "your question" }`);
+  console.log(`🚀 Customer Service Agent server running on http://localhost:${PORT}`);
+  console.log(`📝 POST /query with { "task": "customer service request" }`);
+  console.log(`💡 Example: { "task": "I need to return order #12345, the item was defective" }`);
 });

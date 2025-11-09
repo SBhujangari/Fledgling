@@ -7,6 +7,7 @@ import toolsRouter from './routes/tools';
 import compareRouter from './routes/compare';
 import modelsRouter from './routes/models';
 import queryRouter from './routes/query';
+import runsRouter from './routes/runs';
 import { initTracer } from './tracer/core';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api', tracesRouter);
 app.use('/api/tools', toolsRouter);
 app.use('/api/compare', compareRouter);
 app.use('/api/models', modelsRouter);
+app.use('/api/runs', runsRouter);
 app.use(queryRouter);
 
 export { app };

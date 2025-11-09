@@ -1,5 +1,5 @@
 packages:
   - 'backend'
   - 'frontend'
-  - 'fledgling-demo-client'
+  - 'demo-user'
 

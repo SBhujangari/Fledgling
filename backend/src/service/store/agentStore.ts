@@ -81,6 +81,8 @@ export async function registerAgent(input: AgentRegistrationInput): Promise<Agen
     accuracy: input.accuracy,
     modelCostsSaved: input.modelCostsSaved,
     toolIds: input.toolIds ?? [],
+    iterations: input.iterations ?? 1,
+    trainingDataSize: input.trainingDataSize ?? 50,
     createdAt: timestamp,
     updatedAt: timestamp,
   };
@@ -116,6 +118,58 @@ export async function updateAgentMetrics(
   }
   if (metrics.modelCostsSaved !== undefined) {
     agent.modelCostsSaved = metrics.modelCostsSaved;
+  }
+  agent.updatedAt = new Date().toISOString();
+
+  await db.write();
+  return agent;
+}
+
+export async function updateAgentTrainingStatus(
+  id: string,
+  isTraining: boolean
+): Promise<AgentRecord> {
+  const db = await initDb();
+  const agent = db.data?.agents.find((a) => a.id === id);
+
+  if (!agent) {
+    throw new Error(`Agent id "${id}" not found`);
+  }
+
+  agent.isTraining = isTraining;
+  agent.updatedAt = new Date().toISOString();
+
+  await db.write();
+  return agent;
+}
+
+export async function updateAgentTrainingMetrics(
+  id: string,
+  metrics: {
+    accuracy?: number;
+    modelCostsSaved?: number;
+    iterations?: number;
+    trainingDataSize?: number;
+  }
+): Promise<AgentRecord> {
+  const db = await initDb();
+  const agent = db.data?.agents.find((a) => a.id === id);
+
+  if (!agent) {
+    throw new Error(`Agent id "${id}" not found`);
+  }
+
+  if (metrics.accuracy !== undefined) {
+    agent.accuracy = metrics.accuracy;
+  }
+  if (metrics.modelCostsSaved !== undefined) {
+    agent.modelCostsSaved = metrics.modelCostsSaved;
+  }
+  if (metrics.iterations !== undefined) {
+    agent.iterations = metrics.iterations;
+  }
+  if (metrics.trainingDataSize !== undefined) {
+    agent.trainingDataSize = metrics.trainingDataSize;
   }
   agent.updatedAt = new Date().toISOString();
 

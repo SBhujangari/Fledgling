@@ -89,6 +89,488 @@
       },
       "createdAt": "2025-11-09T05:41:06.605Z",
       "updatedAt": "2025-11-09T06:03:58.341Z"
+    },
+    {
+      "id": "demo-agent::lookupOrder",
+      "name": "lookupOrder",
+      "description": "Look up order details by order ID. Use this tool when a customer mentions an order number, order ID, or asks about their order status, items, or order information. Do not guess order details - use this tool to get accurate order data.",
+      "inputSchema": {
+        "$ref": "#/definitions/lookupOrder",
+        "definitions": {
+          "lookupOrder": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID or order number provided by the customer"
+              }
+            },
+            "required": [
+              "orderId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "lookupOrder"
+      },
+      "createdAt": "2025-11-09T07:50:04.042Z",
+      "updatedAt": "2025-11-09T07:50:04.042Z"
+    },
+    {
+      "id": "demo-agent::trackDelivery",
+      "name": "trackDelivery",
+      "description": "Track the delivery status of a shipment using a tracking number. Use this tool when a customer mentions a tracking number, asks \"where is my package\", \"when will it arrive\", or wants delivery status information. Do not guess delivery status - use this tool to get real-time tracking data.",
+      "inputSchema": {
+        "$ref": "#/definitions/trackDelivery",
+        "definitions": {
+          "trackDelivery": {
+            "type": "object",
+            "properties": {
+              "trackingNumber": {
+                "type": "string",
+                "description": "The tracking number for the shipment"
+              }
+            },
+            "required": [
+              "trackingNumber"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "trackDelivery"
+      },
+      "createdAt": "2025-11-09T07:50:04.050Z",
+      "updatedAt": "2025-11-09T07:50:04.050Z"
+    },
+    {
+      "id": "demo-agent::checkDeliveryEvidence",
+      "name": "checkDeliveryEvidence",
+      "description": "Check delivery evidence including photos and signatures. Use this tool when a customer claims they did not receive their package, says \"it was never delivered\", or needs proof of delivery. This tool provides actual delivery proof data including photos and signatures.",
+      "inputSchema": {
+        "$ref": "#/definitions/checkDeliveryEvidence",
+        "definitions": {
+          "checkDeliveryEvidence": {
+            "type": "object",
+            "properties": {
+              "trackingNumber": {
+                "type": "string",
+                "description": "The tracking number to check delivery evidence for"
+              }
+            },
+            "required": [
+              "trackingNumber"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "checkDeliveryEvidence"
+      },
+      "createdAt": "2025-11-09T07:50:04.056Z",
+      "updatedAt": "2025-11-09T07:50:04.056Z"
+    },
+    {
+      "id": "demo-agent::checkRefundPolicy",
+      "name": "checkRefundPolicy",
+      "description": "Check if a customer is eligible for a refund based on the refund policy. Use this tool BEFORE processing any refund request to determine eligibility and refund amount. Never process a refund without checking policy first using this tool.",
+      "inputSchema": {
+        "$ref": "#/definitions/checkRefundPolicy",
+        "definitions": {
+          "checkRefundPolicy": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID for the refund request"
+              },
+              "reason": {
+                "type": "string",
+                "description": "The reason the customer is requesting a refund"
+              }
+            },
+            "required": [
+              "orderId",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "checkRefundPolicy"
+      },
+      "createdAt": "2025-11-09T07:50:04.061Z",
+      "updatedAt": "2025-11-09T07:50:04.061Z"
+    },
+    {
+      "id": "demo-agent::checkReplacementPolicy",
+      "name": "checkReplacementPolicy",
+      "description": "Check if a customer is eligible for a replacement item and what options are available. Use this tool when a customer wants to exchange, replace, or get a new item. This tool provides replacement options, availability, and shipping times.",
+      "inputSchema": {
+        "$ref": "#/definitions/checkReplacementPolicy",
+        "definitions": {
+          "checkReplacementPolicy": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID for the replacement request"
+              },
+              "itemName": {
+                "type": "string",
+                "description": "The name or description of the item to be replaced"
+              }
+            },
+            "required": [
+              "orderId",
+              "itemName"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "checkReplacementPolicy"
+      },
+      "createdAt": "2025-11-09T07:50:04.066Z",
+      "updatedAt": "2025-11-09T07:50:04.066Z"
+    },
+    {
+      "id": "demo-agent::createCase",
+      "name": "createCase",
+      "description": "Create a support case in the case management system. Use this tool for complex issues that require follow-up, escalation, or cannot be resolved immediately. This creates a tracked case with a case ID that the customer can reference.",
+      "inputSchema": {
+        "$ref": "#/definitions/createCase",
+        "definitions": {
+          "createCase": {
+            "type": "object",
+            "properties": {
+              "customerEmail": {
+                "type": "string",
+                "format": "email",
+                "description": "The customer email address"
+              },
+              "issueType": {
+                "type": "string",
+                "description": "The type of issue (e.g., \"return request\", \"delivery issue\", \"refund request\")"
+              },
+              "description": {
+                "type": "string",
+                "description": "A detailed description of the customer issue"
+              }
+            },
+            "required": [
+              "customerEmail",
+              "issueType",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "createCase"
+      },
+      "createdAt": "2025-11-09T07:50:04.071Z",
+      "updatedAt": "2025-11-09T07:50:04.071Z"
+    },
+    {
+      "id": "demo-agent::processRefund",
+      "name": "processRefund",
+      "description": "Process a refund payment to the customer. Use this tool to actually execute refund transactions. Only use AFTER confirming eligibility with checkRefundPolicy. This tool processes the refund and provides a confirmation number.",
+      "inputSchema": {
+        "$ref": "#/definitions/processRefund",
+        "definitions": {
+          "processRefund": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID to process refund for"
+              },
+              "amount": {
+                "type": "number",
+                "description": "The refund amount in dollars"
+              },
+              "reason": {
+                "type": "string",
+                "description": "The reason for the refund"
+              }
+            },
+            "required": [
+              "orderId",
+              "amount",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "processRefund"
+      },
+      "createdAt": "2025-11-09T07:50:04.077Z",
+      "updatedAt": "2025-11-09T07:50:04.077Z"
+    },
+    {
+      "id": "customer-service-agent::lookupOrder",
+      "name": "lookupOrder",
+      "description": "Look up order details by order ID. Use this tool when a customer mentions an order number, order ID, or asks about their order status, items, or order information. Do not guess order details - use this tool to get accurate order data.",
+      "inputSchema": {
+        "$ref": "#/definitions/lookupOrder",
+        "definitions": {
+          "lookupOrder": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID or order number provided by the customer"
+              }
+            },
+            "required": [
+              "orderId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "lookupOrder"
+      },
+      "createdAt": "2025-11-09T07:51:48.911Z",
+      "updatedAt": "2025-11-09T07:55:16.399Z"
+    },
+    {
+      "id": "customer-service-agent::trackDelivery",
+      "name": "trackDelivery",
+      "description": "Track the delivery status of a shipment using a tracking number. Use this tool when a customer mentions a tracking number, asks \"where is my package\", \"when will it arrive\", or wants delivery status information. Do not guess delivery status - use this tool to get real-time tracking data.",
+      "inputSchema": {
+        "$ref": "#/definitions/trackDelivery",
+        "definitions": {
+          "trackDelivery": {
+            "type": "object",
+            "properties": {
+              "trackingNumber": {
+                "type": "string",
+                "description": "The tracking number for the shipment"
+              }
+            },
+            "required": [
+              "trackingNumber"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "trackDelivery"
+      },
+      "createdAt": "2025-11-09T07:51:48.915Z",
+      "updatedAt": "2025-11-09T07:55:16.405Z"
+    },
+    {
+      "id": "customer-service-agent::checkDeliveryEvidence",
+      "name": "checkDeliveryEvidence",
+      "description": "Check delivery evidence including photos and signatures. Use this tool when a customer claims they did not receive their package, says \"it was never delivered\", or needs proof of delivery. This tool provides actual delivery proof data including photos and signatures.",
+      "inputSchema": {
+        "$ref": "#/definitions/checkDeliveryEvidence",
+        "definitions": {
+          "checkDeliveryEvidence": {
+            "type": "object",
+            "properties": {
+              "trackingNumber": {
+                "type": "string",
+                "description": "The tracking number to check delivery evidence for"
+              }
+            },
+            "required": [
+              "trackingNumber"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "checkDeliveryEvidence"
+      },
+      "createdAt": "2025-11-09T07:51:48.919Z",
+      "updatedAt": "2025-11-09T07:55:16.409Z"
+    },
+    {
+      "id": "customer-service-agent::checkRefundPolicy",
+      "name": "checkRefundPolicy",
+      "description": "Check if a customer is eligible for a refund based on the refund policy. Use this tool BEFORE processing any refund request to determine eligibility and refund amount. Never process a refund without checking policy first using this tool.",
+      "inputSchema": {
+        "$ref": "#/definitions/checkRefundPolicy",
+        "definitions": {
+          "checkRefundPolicy": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID for the refund request"
+              },
+              "reason": {
+                "type": "string",
+                "description": "The reason the customer is requesting a refund"
+              }
+            },
+            "required": [
+              "orderId",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "checkRefundPolicy"
+      },
+      "createdAt": "2025-11-09T07:51:48.921Z",
+      "updatedAt": "2025-11-09T07:55:16.412Z"
+    },
+    {
+      "id": "customer-service-agent::checkReplacementPolicy",
+      "name": "checkReplacementPolicy",
+      "description": "Check if a customer is eligible for a replacement item and what options are available. Use this tool when a customer wants to exchange, replace, or get a new item. This tool provides replacement options, availability, and shipping times.",
+      "inputSchema": {
+        "$ref": "#/definitions/checkReplacementPolicy",
+        "definitions": {
+          "checkReplacementPolicy": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID for the replacement request"
+              },
+              "itemName": {
+                "type": "string",
+                "description": "The name or description of the item to be replaced"
+              }
+            },
+            "required": [
+              "orderId",
+              "itemName"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "checkReplacementPolicy"
+      },
+      "createdAt": "2025-11-09T07:51:48.924Z",
+      "updatedAt": "2025-11-09T07:55:16.414Z"
+    },
+    {
+      "id": "customer-service-agent::createCase",
+      "name": "createCase",
+      "description": "Create a support case in the case management system. Use this tool for complex issues that require follow-up, escalation, or cannot be resolved immediately. This creates a tracked case with a case ID that the customer can reference.",
+      "inputSchema": {
+        "$ref": "#/definitions/createCase",
+        "definitions": {
+          "createCase": {
+            "type": "object",
+            "properties": {
+              "customerEmail": {
+                "type": "string",
+                "format": "email",
+                "description": "The customer email address"
+              },
+              "issueType": {
+                "type": "string",
+                "description": "The type of issue (e.g., \"return request\", \"delivery issue\", \"refund request\")"
+              },
+              "description": {
+                "type": "string",
+                "description": "A detailed description of the customer issue"
+              }
+            },
+            "required": [
+              "customerEmail",
+              "issueType",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "createCase"
+      },
+      "createdAt": "2025-11-09T07:51:48.926Z",
+      "updatedAt": "2025-11-09T07:55:16.420Z"
+    },
+    {
+      "id": "customer-service-agent::processRefund",
+      "name": "processRefund",
+      "description": "Process a refund payment to the customer. Use this tool to actually execute refund transactions. Only use AFTER confirming eligibility with checkRefundPolicy. This tool processes the refund and provides a confirmation number.",
+      "inputSchema": {
+        "$ref": "#/definitions/processRefund",
+        "definitions": {
+          "processRefund": {
+            "type": "object",
+            "properties": {
+              "orderId": {
+                "type": "string",
+                "description": "The order ID to process refund for"
+              },
+              "amount": {
+                "type": "number",
+                "description": "The refund amount in dollars"
+              },
+              "reason": {
+                "type": "string",
+                "description": "The reason for the refund"
+              }
+            },
+            "required": [
+              "orderId",
+              "amount",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "processRefund"
+      },
+      "createdAt": "2025-11-09T07:51:48.928Z",
+      "updatedAt": "2025-11-09T07:55:16.423Z"
     }
   ]
 }

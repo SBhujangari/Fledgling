@@ -19,6 +19,9 @@ router.get('/', async (_req: Request, res: Response) => {
     accuracy: agent.accuracy ?? null,
     model_costs_saved: agent.modelCostsSaved ?? null,
     tool_ids: agent.toolIds ?? [],
+    is_training: agent.isTraining ?? false,
+    iterations: agent.iterations ?? 1,
+    training_data_size: agent.trainingDataSize ?? 50,
   }));
 
   res.json(payload);

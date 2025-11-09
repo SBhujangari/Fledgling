@@ -3,7 +3,7 @@ import type { UsageStats, FinetuneSample } from '../../types/finetune';
 
 export interface ModelEndpointConfig {
   provider: 'openai' | 'mastra' | 'local' | (string & {});
-  model: string;
+  model: string | any; // LanguageModelV2 from AI SDK - using any to avoid import issues
   label?: string;
   temperature?: number;
   metadata?: Record<string, unknown>;

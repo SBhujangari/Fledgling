@@ -11,6 +11,9 @@ export interface AgentRecord {
   accuracy?: number; // Current model accuracy percentage (0-100)
   modelCostsSaved?: number; // Total cost savings in USD
   toolIds?: string[]; // IDs of tools associated with this agent
+  isTraining?: boolean; // Whether the agent is currently being fine-tuned
+  iterations?: number; // Number of training iterations completed
+  trainingDataSize?: number; // Total number of training samples
   createdAt: string;
   updatedAt: string;
 }
@@ -31,6 +34,8 @@ export interface AgentRegistrationInput {
   accuracy?: number;
   modelCostsSaved?: number;
   toolIds?: string[];
+  iterations?: number;
+  trainingDataSize?: number;
   // Note: slmModel is NOT in input - it's auto-assigned by the system
 }
 
@@ -56,4 +61,19 @@ export interface ToolRegistrationInput {
   inputSchema?: unknown;
   outputSchema?: unknown;
   metadata?: Record<string, unknown> | null;
+}
+
+export interface RunRecord {
+  id: string;
+  agentId: string;
+  name: string;
+  status: 'queued' | 'running' | 'completed' | 'failed';
+  queuedAt: string;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RunStore {
+  runs: RunRecord[];
 }

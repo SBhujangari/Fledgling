@@ -1,4 +1,4 @@
-import type { AgentResponse, TracesResponse, ToolResponse } from "@/types"
+import type { AgentResponse, TracesResponse, ToolResponse, RunResponse } from "@/types"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"
 
@@ -72,4 +72,20 @@ export const api = {
     const queryParams = agentId ? `?agentId=${encodeURIComponent(agentId)}` : ""
     return fetchAPI<ToolResponse[]>(`/api/tools${queryParams}`)
   },
+
+  // Runs
+  getRuns: (agentId?: string) => {
+    const queryParams = agentId ? `?agentId=${encodeURIComponent(agentId)}` : ""
+    return fetchAPI<RunResponse[]>(`/api/runs${queryParams}`)
+  },
+  createRun: (data: { agentId: string; name: string }) =>
+    fetchAPI<RunResponse>("/api/runs", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateRunStatus: (id: string, status: RunResponse['status'], completedAt?: string | null) =>
+    fetchAPI<RunResponse>(`/api/runs/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, completedAt }),
+    }),
 }
