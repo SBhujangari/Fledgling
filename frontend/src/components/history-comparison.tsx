@@ -7,12 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SendHorizontal, Sparkles, Zap } from "lucide-react"
 import { ChatMessage } from "@/components/chat-message"
 import { TraceMessage } from "@/components/trace-message"
+import type { HistoryItem } from "@/types"
 
 export function HistoryComparison() {
   const [prompt, setPrompt] = useState("")
   const [selectedIteration, setSelectedIteration] = useState("all")
   const [isLoading, setIsLoading] = useState(false)
-  const [liveComparison, setLiveComparison] = useState<any>(null)
+  const [liveComparison, setLiveComparison] = useState<HistoryItem | null>(null)
 
   // ============= BACKEND CONNECTION NEEDED =============
   // TODO: Replace with actual API call to GET /api/iterations

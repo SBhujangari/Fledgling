@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Settings, Cpu, Database, Activity } from "lucide-react"
+import { Settings, Cpu, Database, Activity, AlertCircle, Target, Download } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, Target, Download } from "lucide-react"
 import { useState } from "react"
 
 export default function TuningPage() {
