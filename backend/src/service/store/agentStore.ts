@@ -53,6 +53,7 @@ export async function registerAgent(input: AgentRegistrationInput): Promise<Agen
     description: input.description,
     tags: input.tags,
     langfuseMetadataKey: input.langfuseMetadataKey,
+    lastTrainedModelPath: input.lastTrainedModelPath ?? null,
     createdAt: timestamp,
     updatedAt: timestamp,
   };
