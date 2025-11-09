@@ -55,6 +55,21 @@ torchrun --nproc_per_node=4 train_unsloth.py --track toolcall \
 ```
 `train_unsloth.py` wires gradient checkpointing, `ddp_find_unused_parameters=False`, and default DeepSpeed ZeRO-2 config (`slm_swap/accelerate_config/deepspeed_zero2.json`) so multi-GPU utilization is automatic.
 
+## Hugging Face Upload Helper
+GitHub blocks binary blobs larger than 100 MB, so push adapters, eval logs, or datasets to a private Hugging Face repo until you are ready to make them public.
+
+```bash
+huggingface-cli login  # or export HUGGING_FACE_HUB_TOKEN
+python slm_swap/hf_upload.py \
+  slm_swap/04_ft/adapter_structured \
+  slm_swap/04_ft/adapter_toolcall \
+  --repo-id your-username/slm-adapters \
+  --private \
+  --auto-subdir
+```
+
+Use `--repo-type dataset` to upload JSONL corpora instead of model weights, `--path-in-repo <subdir>` to pin the destination folder, and rerun the script any time you need to sync large assets with the Hub.
+
 ## Repo Map
 - `slm_swap/README.md` — full workflow (datasets, baseline evals, comparisons, fine-tune loop).
 - `slm_swap/agent.md` — operator playbook detailing the evaluation-first plan.

@@ -202,6 +202,29 @@ PY
 
 ---
 
+## 9) Upload LoRA / Eval Artifacts to Hugging Face
+
+`git push` will fail for files >100 MB (e.g., `adapter_model.safetensors`). Ship heavy artifacts to the Hub instead:
+
+1. Authenticate once via `huggingface-cli login` **or** set `HUGGING_FACE_HUB_TOKEN`.
+2. Run the uploader with your desired repo id (set `--private` to keep it hidden until you are ready to flip public).
+
+```bash
+python slm_swap/hf_upload.py \
+  slm_swap/04_ft/adapter_structured \
+  slm_swap/04_ft/adapter_toolcall \
+  --repo-id your-username/slm-adapters \
+  --private \
+  --auto-subdir \
+  --commit-message "sync adapters $(date +%Y-%m-%d)"
+```
+
+- Use `--repo-type dataset` to push evaluation outputs or JSONL corpora, or stick with the default `model` type for adapters.
+- Pass `--path-in-repo adapters/toolcall` (for example) to control the destination folder; otherwise `--auto-subdir` keeps each local folder under its own name.
+- The script is idempotent; rerunning it overwrites/updates only the uploaded paths, so it works as a drop-in replacement for storing large binaries in Git.
+
+---
+
 ## 9) Common Pitfalls & Fixes
 
 - **Malformed JSON** → “return only valid JSON” + schema validation.
