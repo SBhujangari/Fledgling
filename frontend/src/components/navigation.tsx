@@ -32,14 +32,14 @@ export function Navigation() {
               Dashboard
             </Link>
             <Link
-              to="/testing"
+              to="/history"
               className={`text-sm font-medium transition-colors ${
-                isActive("/testing") 
+                isActive("/history") 
                   ? "text-foreground" 
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Testing
+              History
             </Link>
             <Link
               to="/tuning"

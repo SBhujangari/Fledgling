@@ -1,13 +1,4 @@
-interface ToolCall {
-  name: string
-  input: any
-  result: any
-}
-
-interface ChatResponse {
-  content: string
-  toolCalls?: ToolCall[]
-}
+import type { ChatResponse } from "@/types"
 
 interface ChatMessageProps {
   prompt: string
