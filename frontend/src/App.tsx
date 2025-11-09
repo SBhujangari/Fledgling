@@ -44,6 +44,11 @@ interface SlmModelsResponse {
   selectedAt: string | null;
 }
 
+interface HfTokenMeta {
+  hasToken: boolean;
+  updatedAt: string | null;
+}
+
 async function fetchTraces(): Promise<TracesResponse> {
   const response = await fetch('/api/traces');
   if (!response.ok) {
@@ -58,6 +63,15 @@ async function fetchSlmModels(): Promise<SlmModelsResponse> {
   if (!response.ok) {
     const text = await response.text();
     throw new Error(text || 'Failed to load SLM catalog');
+  }
+  return response.json();
+}
+
+async function fetchHfTokenMeta(): Promise<HfTokenMeta> {
+  const response = await fetch('/api/hf/token');
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || 'Failed to load HF token status');
   }
   return response.json();
 }
@@ -101,6 +115,14 @@ export default function App() {
     queryFn: fetchSlmModels,
     refetchOnWindowFocus: false,
   });
+  const {
+    data: hfTokenMeta,
+    error: hfTokenError,
+  } = useQuery({
+    queryKey: ['hf-token'],
+    queryFn: fetchHfTokenMeta,
+    refetchOnWindowFocus: false,
+  });
   const uploadMutation = useMutation<UploadResult, Error, UploadRequestPayload>({
     mutationFn: async (payload: UploadRequestPayload) => {
       const response = await fetch('/api/hf/upload', {
@@ -140,6 +162,42 @@ export default function App() {
       setPendingModelId(slmData.selectedModelId);
     }
   }, [slmData?.selectedModelId]);
+  const [hfTokenInput, setHfTokenInput] = useState('');
+  const saveHfTokenMutation = useMutation(
+    async (token: string) => {
+      const response = await fetch('/api/hf/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = (await response.json()) as { ok: boolean; updatedAt?: string; error?: string };
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Failed to save token');
+      }
+      return data.updatedAt;
+    },
+    {
+      onSuccess: () => {
+        setHfTokenInput('');
+        queryClient.invalidateQueries({ queryKey: ['hf-token'] }).catch(() => {});
+      },
+    },
+  );
+  const clearHfTokenMutation = useMutation(
+    async () => {
+      const response = await fetch('/api/hf/token', { method: 'DELETE' });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Failed to clear token');
+      }
+      return true;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['hf-token'] }).catch(() => {});
+      },
+    },
+  );
 
   const handleFetch = async () => {
     const result = await refetch();
@@ -199,6 +257,54 @@ export default function App() {
                 {JSON.stringify(data, null, 2)}
               </pre>
             </div>
+          )}
+        </section>
+
+        <section style={{ border: '1px solid #e2e8f0', borderRadius: '0.75rem', padding: '1.5rem' }}>
+          <h2>Hugging Face Token</h2>
+          <p>Store your write-scoped HF token once; backend routes will reuse it for uploads.</p>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+            Token (starts with <code>hf_</code>)
+            <input
+              type="password"
+              value={hfTokenInput}
+              onChange={(event) => setHfTokenInput(event.target.value)}
+              placeholder="hf_xxx..."
+              autoComplete="off"
+              style={{ width: '100%', marginTop: '0.35rem', padding: '0.5rem' }}
+            />
+          </label>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              type="button"
+              onClick={() => saveHfTokenMutation.mutate(hfTokenInput.trim())}
+              disabled={!hfTokenInput.trim() || saveHfTokenMutation.isPending}
+              style={{ padding: '0.6rem 1.25rem' }}
+            >
+              {saveHfTokenMutation.isPending ? 'Saving…' : 'Save token'}
+            </button>
+            <button
+              type="button"
+              onClick={() => clearHfTokenMutation.mutate()}
+              disabled={clearHfTokenMutation.isPending || !hfTokenMeta?.hasToken}
+              style={{ padding: '0.6rem 1.25rem', background: '#fee2e2', border: '1px solid #fecaca' }}
+            >
+              {clearHfTokenMutation.isPending ? 'Clearing…' : 'Remove token'}
+            </button>
+          </div>
+          {hfTokenMeta && (
+            <p style={{ marginTop: '0.75rem', color: '#475569' }}>
+              Status: {hfTokenMeta.hasToken ? `Stored (updated ${hfTokenMeta.updatedAt ? new Date(hfTokenMeta.updatedAt).toLocaleString() : 'recently'})` : 'Missing'}
+            </p>
+          )}
+          {hfTokenError instanceof Error && (
+            <pre style={{ color: 'red', marginTop: '0.75rem' }}>{hfTokenError.message}</pre>
+          )}
+          {saveHfTokenMutation.error instanceof Error && (
+            <pre style={{ color: 'red', marginTop: '0.75rem' }}>{saveHfTokenMutation.error.message}</pre>
+          )}
+          {clearHfTokenMutation.error instanceof Error && (
+            <pre style={{ color: 'red', marginTop: '0.75rem' }}>{clearHfTokenMutation.error.message}</pre>
           )}
         </section>
 

@@ -9,6 +9,7 @@ import { parseTraceToSample } from './parsers/otelParser';
 import type { FinetuneSample } from './types/finetune';
 import { uploadToHuggingFace, type HuggingFaceRepoType } from './service/hfUploader';
 import { getSelectedModel, listModels, selectModel } from './service/slmCatalog';
+import { deleteStoredHfToken, getStoredTokenMetadata, writeStoredHfToken } from './service/hfTokenStore';
 
 const app = express();
 app.use(cors());
@@ -96,6 +97,35 @@ app.post('/api/hf/upload', async (req: Request<unknown, unknown, HuggingFaceUplo
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ ok: false, error: message });
   }
+});
+
+app.get('/api/hf/token', (_req: Request, res: Response) => {
+  const meta = getStoredTokenMetadata();
+  res.json(meta);
+});
+
+interface HfTokenRequestBody {
+  token?: string;
+}
+
+app.post('/api/hf/token', (req: Request<unknown, unknown, HfTokenRequestBody>, res: Response) => {
+  try {
+    const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+    if (!token) {
+      res.status(400).json({ error: 'token is required.' });
+      return;
+    }
+    const meta = writeStoredHfToken(token);
+    res.json({ ok: true, updatedAt: meta.updatedAt });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ ok: false, error: message });
+  }
+});
+
+app.delete('/api/hf/token', (_req: Request, res: Response) => {
+  deleteStoredHfToken();
+  res.json({ ok: true });
 });
 
 app.get('/api/slm/models', (_req: Request, res: Response) => {

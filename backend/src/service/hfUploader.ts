@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { performance } from 'perf_hooks';
 
+import { readStoredHfToken } from './hfTokenStore';
+
 const REPO_ROOT = path.resolve(__dirname, '..', '..', '..');
 const SCRIPT_PATH = path.join(REPO_ROOT, 'slm_swap', 'hf_upload.py');
 const VALID_REPO_TYPES = new Set(['model', 'dataset', 'space'] as const);
@@ -94,7 +96,11 @@ export async function uploadToHuggingFace(options: HuggingFaceUploadOptions): Pr
 
   ensureScriptAvailable();
 
-  const token = options.token?.trim() ?? process.env.HF_UPLOAD_TOKEN?.trim() ?? process.env.HUGGING_FACE_HUB_TOKEN?.trim();
+  const tokenFromStore = readStoredHfToken();
+  const token = options.token?.trim()
+    ?? process.env.HF_UPLOAD_TOKEN?.trim()
+    ?? process.env.HUGGING_FACE_HUB_TOKEN?.trim()
+    ?? tokenFromStore?.trim();
   if (!token) {
     throw new Error('Missing Hugging Face token. Set HF_UPLOAD_TOKEN or HUGGING_FACE_HUB_TOKEN in backend/.env.');
   }

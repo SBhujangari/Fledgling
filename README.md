@@ -79,10 +79,17 @@ Training scripts can read the JSON to decide which checkpoint to fine-tune or ev
 ## Hugging Face Upload Helper
 GitHub blocks binary blobs larger than 100 MB, so push adapters, eval logs, or datasets to a private Hugging Face repo until you are ready to make them public.
 
-1. Copy `backend/.env.example` → `backend/.env` and set `HF_UPLOAD_TOKEN` to a **write-scoped** Hugging Face token (you can optionally override the Python interpreter with `HF_UPLOAD_PYTHON`).
-2. Start the backend + frontend (`npm run dev` in each folder). The dashboard now exposes an **Hugging Face Upload** panel where operators can pick target folders, tweak the commit message, and ship artifacts with one click.
+1. Store a **write-scoped** Hugging Face token once (either via dashboard or API). Tokens are saved in `backend/.hf_token`:
 
-The backend exposes the same workflow over HTTP so you can call it from other systems:
+   ```bash
+   curl -X POST http://localhost:4000/api/hf/token \
+     -H "Content-Type: application/json" \
+     -d '{"token":"hf_xxx"}'
+   ```
+
+2. Start the backend + frontend (`npm run dev` in each folder). The Operations Console exposes a token manager and an **Hugging Face Upload** panel where operators can pick target folders, tweak the commit message, and ship artifacts with one click—no extra CLI login required.
+
+The backend exposes the same upload workflow over HTTP so you can call it from other systems:
 
 ```bash
 curl -X POST http://localhost:4000/api/hf/upload \
