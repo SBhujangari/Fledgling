@@ -3,8 +3,11 @@ import {
   startObservation,
   updateActiveTrace,
 } from '@langfuse/tracing';
+import { zodToJsonSchema } from 'zod-to-json-schema';
+import type { ZodTypeAny } from 'zod';
 
 import { ensureTracerInitialized } from '../core';
+import type { ToolRegistrationInput } from '../../types/persistence';
 
 export interface MastraTracingOptions {
   agentId: string;
@@ -16,6 +19,13 @@ export type MastraAgentLike = {
   generate: (...args: any[]) => Promise<any>;
   stream?: (...args: any[]) => Promise<any>;
 };
+
+export interface MastraToolDefinition {
+  description?: string;
+  parameters?: ZodTypeAny;
+}
+
+export type MastraToolMap = Record<string, MastraToolDefinition>;
 
 export function withMastraTracing<T extends MastraAgentLike>(agent: T, options: MastraTracingOptions): T {
   ensureTracerInitialized();
@@ -163,4 +173,18 @@ function flattenContent(part: any): string {
     if (part.value) return JSON.stringify(part.value);
   }
   return '';
+}
+
+export function mapMastraTools(agentId: string, tools?: MastraToolMap): ToolRegistrationInput[] {
+  if (!tools) {
+    return [];
+  }
+
+  return Object.entries(tools).map(([name, tool], index) => ({
+    id: `${agentId}::${name ?? `tool-${index + 1}`}`,
+    name,
+    description: tool.description,
+    inputSchema: tool.parameters ? zodToJsonSchema(tool.parameters, name || undefined) : undefined,
+    metadata: { provider: 'mastra', builtinKey: name ?? `tool-${index + 1}` },
+  }));
 }

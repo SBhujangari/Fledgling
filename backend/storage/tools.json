@@ -1,0 +1,94 @@
+{
+  "tools": [
+    {
+      "id": "demo-agent::getLocation",
+      "name": "getLocation",
+      "description": "Returns the user's current location",
+      "inputSchema": {
+        "$ref": "#/definitions/getLocation",
+        "definitions": {
+          "getLocation": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "description": "Summary of why you need a location (e.g., to contextualize recommendations)."
+              }
+            },
+            "required": [
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "getLocation"
+      },
+      "createdAt": "2025-11-09T05:41:06.604Z",
+      "updatedAt": "2025-11-09T06:03:58.339Z"
+    },
+    {
+      "id": "research-agent::fetchDataset",
+      "name": "fetchDataset",
+      "description": "Retrieves a dataset summary for a requested topic",
+      "inputSchema": {
+        "$ref": "#/definitions/fetchDataset",
+        "definitions": {
+          "fetchDataset": {
+            "type": "object",
+            "properties": {
+              "topic": {
+                "type": "string",
+                "description": "Dataset topic or domain to retrieve"
+              }
+            },
+            "required": [
+              "topic"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "fetchDataset"
+      },
+      "createdAt": "2025-11-09T05:41:06.604Z",
+      "updatedAt": "2025-11-09T06:03:58.340Z"
+    },
+    {
+      "id": "research-agent::writeMemo",
+      "name": "writeMemo",
+      "description": "Stores a short memo capturing the synthesized insight",
+      "inputSchema": {
+        "$ref": "#/definitions/writeMemo",
+        "definitions": {
+          "writeMemo": {
+            "type": "object",
+            "properties": {
+              "insight": {
+                "type": "string",
+                "description": "Key takeaway or memo text"
+              }
+            },
+            "required": [
+              "insight"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "metadata": {
+        "provider": "mastra",
+        "builtinKey": "writeMemo"
+      },
+      "createdAt": "2025-11-09T05:41:06.605Z",
+      "updatedAt": "2025-11-09T06:03:58.341Z"
+    }
+  ]
+}

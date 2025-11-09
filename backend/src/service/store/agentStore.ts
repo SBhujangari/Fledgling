@@ -55,6 +55,10 @@ export async function registerAgent(input: AgentRegistrationInput): Promise<Agen
     throw new Error('Agent originalLLM is required');
   }
 
+  if (!input.instructions || !input.instructions.trim()) {
+    throw new Error('Agent instructions is required');
+  }
+
   const existing = db.data?.agents.find((agent) => agent.id === input.id);
   if (existing) {
     throw new Error(`Agent id "${input.id}" is already registered`);
@@ -68,6 +72,7 @@ export async function registerAgent(input: AgentRegistrationInput): Promise<Agen
     id: input.id.trim(),
     name: input.name.trim(),
     taskDescription: input.taskDescription.trim(),
+    instructions: input.instructions.trim(),
     originalLLM: input.originalLLM.trim(),
     slmModel,
     tags: input.tags,
@@ -75,6 +80,7 @@ export async function registerAgent(input: AgentRegistrationInput): Promise<Agen
     lastTrainedModelPath: input.lastTrainedModelPath ?? null,
     accuracy: input.accuracy,
     modelCostsSaved: input.modelCostsSaved,
+    toolIds: input.toolIds ?? [],
     createdAt: timestamp,
     updatedAt: timestamp,
   };
