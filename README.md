@@ -2,7 +2,7 @@
 
 **Making task inference cheaper and more reliable**
 
-Drop-in observability and fine-tuning tools for AI agents. Instrument your Mastra agents with 10 lines of code, get full trace visibility, and optionally fine-tune local SLMs to replace expensive LLMs.
+Drop-in observability and fine-tuning tools for AI agents. Instrument your agents with 10 lines of code (soon a click of a button), get full trace visibility, and fine-tune local SLMs to replace expensive LLMs.
 
 > **⚠️ Note:** The TypeScript frontend/backend and Python fine-tuning pipeline are **not yet fully integrated**. They can be run independently but don't communicate automatically. Integration is in progress.
 
