@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Zap, User, Settings } from "lucide-react"
+import { User, Settings } from "lucide-react"
 
 export function Navigation() {
   const location = useLocation()
@@ -14,7 +14,6 @@ export function Navigation() {
       <div className="w-full px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-2">
-            <Zap className="size-6 text-primary" />
             <span className="text-xl font-semibold text-foreground">Fledgling</span>
           </Link>
           <div className="hidden items-center gap-6 md:flex">

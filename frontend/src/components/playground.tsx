@@ -4,9 +4,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sparkles, Zap, SendHorizontal } from "lucide-react"
+import { Sparkles, Zap, SendHorizontal, Loader2 } from "lucide-react"
 import { ChatMessage } from "@/components/chat-message"
 import { TraceMessage } from "@/components/trace-message"
+import { TraceGraph } from "@/components/trace-graph"
 import type { HistoryItem } from "@/types"
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "")
@@ -35,17 +36,12 @@ interface CompareRun {
   }
 }
 
-interface TraceSampleStep {
-  type: string
-  toolName?: string
-  input?: unknown
-  output?: unknown
-}
+import type { TraceSample } from "@/types"
 
 interface CompareResponse {
   prompt: string
   runs: CompareRun[]
-  traceSample?: { steps?: TraceSampleStep[] }
+  traceSample?: TraceSample
 }
 
 export function Playground() {
@@ -138,7 +134,7 @@ export function Playground() {
           ? slmRun.model
           : slmRun.label || 'fallback model';
         setFallbackNotice(
-          `SLM provider unavailable; using ${fallbackModelName} for this comparison.`
+          ``
         )
       } else {
         setFallbackNotice(null)
@@ -157,6 +153,7 @@ export function Playground() {
           toolCalls: slmToolCalls,
         },
         slmFallback: Boolean(slmRun?.fallback),
+        traceSample: data.traceSample,
       })
     } catch (err) {
       console.error("Comparison failed", err)
@@ -204,7 +201,14 @@ export function Playground() {
                 <span className="text-xs text-muted-foreground ml-2">Original: {originalModel}</span>
               )}
             </div>
-            {liveComparison ? (
+            {isLoading ? (
+              <div className="min-h-[400px] flex items-center justify-center border border-border rounded-lg bg-background/50">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="size-6 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">Generating...</p>
+                </div>
+              </div>
+            ) : liveComparison ? (
               <div className="min-h-[400px]">
                 <ChatMessage prompt={liveComparison.prompt} response={liveComparison.llmResponse} type="llm" />
               </div>
@@ -235,7 +239,14 @@ export function Playground() {
                 <span className="text-sm text-destructive ml-2">{fallbackNotice}</span>
               )}
             </div>
-            {liveComparison ? (
+            {isLoading ? (
+              <div className="min-h-[400px] flex items-center justify-center border border-border rounded-lg bg-background/50">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="size-6 animate-spin text-accent" />
+                  <p className="text-sm text-muted-foreground">Generating...</p>
+                </div>
+              </div>
+            ) : liveComparison ? (
               <div className="min-h-[400px]">
                 <ChatMessage prompt={liveComparison.prompt} response={liveComparison.slmResponse} type="slm" />
               </div>
@@ -260,7 +271,11 @@ export function Playground() {
             disabled={isLoading || !selectedAgentId} 
             className="self-end sm:self-end h-24 w-12 bg-primary hover:bg-primary/90 text-primary-foreground aspect-square"
           >
-            <SendHorizontal className="size-4" />
+            {isLoading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <SendHorizontal className="size-4" />
+            )}
           </Button>
         </div>
       </Card>
@@ -272,7 +287,14 @@ export function Playground() {
         </TabsList>
 
         <TabsContent value="chat" className="mt-6">
-          {liveComparison ? (
+          {isLoading ? (
+            <Card className="p-12 bg-card border-border">
+              <div className="flex flex-col items-center justify-center gap-4">
+                <Loader2 className="size-8 animate-spin text-primary" />
+                <p className="text-muted-foreground">Generating responses...</p>
+              </div>
+            </Card>
+          ) : liveComparison ? (
             <Card className="p-6 bg-card border-border">
               <div className="mb-4">
                 <span className="text-xs text-muted-foreground">{liveComparison.timestamp}</span>
@@ -302,28 +324,61 @@ export function Playground() {
         </TabsContent>
 
         <TabsContent value="trace" className="mt-6">
-          {liveComparison ? (
-            <Card className="p-6 bg-card border-border">
-              <div className="mb-4">
-                <span className="text-xs text-muted-foreground">{liveComparison.timestamp}</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="size-4 text-primary" />
-                    <span className="text-sm font-semibold text-foreground">{llmLabel} Trace</span>
-                  </div>
-                  <TraceMessage prompt={liveComparison.prompt} response={liveComparison.llmResponse} type="llm" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Zap className="size-4 text-accent" />
-                    <span className="text-sm font-semibold text-foreground">{slmLabel} Trace</span>
-                  </div>
-                  <TraceMessage prompt={liveComparison.prompt} response={liveComparison.slmResponse} type="slm" />
-                </div>
+          {isLoading ? (
+            <Card className="p-12 bg-card border-border">
+              <div className="flex flex-col items-center justify-center gap-4">
+                <Loader2 className="size-8 animate-spin text-primary" />
+                <p className="text-muted-foreground">Generating traces...</p>
               </div>
             </Card>
+          ) : liveComparison ? (
+            <div className="space-y-6">
+              <Card className="p-6 bg-card border-border">
+                <div className="mb-4">
+                  <span className="text-xs text-muted-foreground">{liveComparison.timestamp}</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="size-4 text-primary" />
+                      <span className="text-sm font-semibold text-foreground">{llmLabel} Trace</span>
+                    </div>
+                    <TraceMessage 
+                      prompt={liveComparison.prompt} 
+                      response={liveComparison.llmResponse} 
+                      type="llm"
+                      traceSample={liveComparison.traceSample}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Zap className="size-4 text-accent" />
+                      <span className="text-sm font-semibold text-foreground">{slmLabel} Trace</span>
+                    </div>
+                    <TraceMessage 
+                      prompt={liveComparison.prompt} 
+                      response={liveComparison.slmResponse} 
+                      type="slm"
+                      traceSample={liveComparison.traceSample}
+                    />
+                  </div>
+                </div>
+              </Card>
+              
+              {/* Trace Graph */}
+              {liveComparison.traceSample && (
+                <Card className="p-6 bg-card border-border">
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-foreground">Execution Flow</h3>
+                    <p className="text-xs text-muted-foreground">Visual representation of trace steps</p>
+                  </div>
+                  <TraceGraph 
+                    traceSample={liveComparison.traceSample}
+                    prompt={liveComparison.prompt}
+                  />
+                </Card>
+              )}
+            </div>
           ) : (
             <Card className="p-12 bg-card border-border text-center">
               <p className="text-muted-foreground">Run a query above to see traces</p>
