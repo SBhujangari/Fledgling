@@ -22,6 +22,7 @@ build/
 *.tsbuildinfo
 .next/
 out/
+fledgling-demo-client/
 
 # IDE and editor files
 .vscode/
@@ -69,6 +70,7 @@ Thumbs.db
 
 # Optional npm cache directory
 .npm
+.mdc
 
 # Optional eslint cache
 .eslintcache
