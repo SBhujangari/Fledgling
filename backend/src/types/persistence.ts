@@ -4,6 +4,7 @@ export interface AgentRecord {
   description?: string;
   tags?: string[];
   langfuseMetadataKey?: string;
+  lastTrainedModelPath?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,4 +19,5 @@ export interface AgentRegistrationInput {
   description?: string;
   tags?: string[];
   langfuseMetadataKey?: string;
+  lastTrainedModelPath?: string | null;
 }
