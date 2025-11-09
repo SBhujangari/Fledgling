@@ -1,5 +1,5 @@
-import { FormEvent, useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface TracesResponse {
   runs: unknown[];
@@ -28,11 +28,36 @@ interface UploadRequestPayload {
   autoSubdir?: boolean;
 }
 
+interface SlmModel {
+  id: string;
+  label: string;
+  source: string;
+  description?: string;
+  capabilities?: string[];
+  available: boolean;
+  location: string | null;
+}
+
+interface SlmModelsResponse {
+  models: SlmModel[];
+  selectedModelId: string | null;
+  selectedAt: string | null;
+}
+
 async function fetchTraces(): Promise<TracesResponse> {
   const response = await fetch('/api/traces');
   if (!response.ok) {
     const text = await response.text();
     throw new Error(text || 'Failed to fetch traces');
+  }
+  return response.json();
+}
+
+async function fetchSlmModels(): Promise<SlmModelsResponse> {
+  const response = await fetch('/api/slm/models');
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || 'Failed to load SLM catalog');
   }
   return response.json();
 }
@@ -60,11 +85,21 @@ export default function App() {
   );
   const [selectedTargets, setSelectedTargets] = useState<string[]>(TARGETS.map((target) => target.value));
   const [extraPaths, setExtraPaths] = useState('');
+  const queryClient = useQueryClient();
   const { data, error, isFetching, refetch } = useQuery({
     queryKey: ['traces'],
     queryFn: fetchTraces,
     enabled: false,
     retry: false,
+  });
+  const {
+    data: slmData,
+    error: slmError,
+    isFetching: isFetchingModels,
+  } = useQuery({
+    queryKey: ['slm-models'],
+    queryFn: fetchSlmModels,
+    refetchOnWindowFocus: false,
   });
   const uploadMutation = useMutation<UploadResult, Error, UploadRequestPayload>({
     mutationFn: async (payload: UploadRequestPayload) => {
@@ -80,6 +115,31 @@ export default function App() {
       return data.result;
     },
   });
+  const slmSelectionMutation = useMutation(
+    async (modelId: string) => {
+      const response = await fetch('/api/slm/select', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelId }),
+      });
+      const data = (await response.json()) as { ok: boolean; selection?: { modelId: string; selectedAt: string }; error?: string };
+      if (!response.ok || !data.ok || !data.selection) {
+        throw new Error(data.error || 'Failed to set model selection');
+      }
+      return data.selection;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['slm-models'] }).catch(() => {});
+      },
+    },
+  );
+  const [pendingModelId, setPendingModelId] = useState('');
+  useEffect(() => {
+    if (slmData?.selectedModelId) {
+      setPendingModelId(slmData.selectedModelId);
+    }
+  }, [slmData?.selectedModelId]);
 
   const handleFetch = async () => {
     const result = await refetch();
@@ -112,6 +172,7 @@ export default function App() {
   };
 
   const uploadDisabled = uploadMutation.isPending || repoId.trim().length === 0 || (selectedTargets.length === 0 && extraPaths.trim().length === 0);
+  const selectedSlm = slmData?.models.find((model) => model.id === slmData.selectedModelId);
 
   return (
     <main style={{ fontFamily: 'Inter, system-ui, sans-serif', padding: '2rem', maxWidth: 1100, margin: '0 auto' }}>
@@ -138,6 +199,69 @@ export default function App() {
                 {JSON.stringify(data, null, 2)}
               </pre>
             </div>
+          )}
+        </section>
+
+        <section style={{ border: '1px solid #e2e8f0', borderRadius: '0.75rem', padding: '1.5rem' }}>
+          <h2>SLM Fine-Tune Selector</h2>
+          <p>Choose which base/fine-tuned checkpoint the next training cycle should start from.</p>
+          {slmError instanceof Error && (
+            <pre style={{ color: 'red', marginBottom: '0.75rem' }}>{slmError.message}</pre>
+          )}
+          <label style={{ display: 'block', marginBottom: '0.75rem' }}>
+            Available models
+            <select
+              value={pendingModelId}
+              onChange={(event) => setPendingModelId(event.target.value)}
+              disabled={isFetchingModels || !slmData}
+              style={{ width: '100%', marginTop: '0.35rem', padding: '0.5rem' }}
+            >
+              <option value="" disabled>
+                {isFetchingModels ? 'Loading models…' : 'Select a model'}
+              </option>
+              {slmData?.models.map((model) => (
+                <option key={model.id} value={model.id} disabled={!model.available}>
+                  {model.label}
+                  {!model.available ? ' (missing assets)' : ''}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            disabled={!pendingModelId || slmSelectionMutation.isPending}
+            onClick={() => slmSelectionMutation.mutate(pendingModelId)}
+            style={{ padding: '0.6rem 1.25rem' }}
+          >
+            {slmSelectionMutation.isPending ? 'Saving…' : 'Set default SLM'}
+          </button>
+          {selectedSlm && (
+            <div style={{ marginTop: '1rem', fontSize: '0.95rem' }}>
+              <p>
+                Current default: <strong>{selectedSlm.label}</strong>{' '}
+                <span style={{ color: '#475569' }}>({selectedSlm.source})</span>
+              </p>
+              {slmData?.selectedAt && <p style={{ color: '#475569' }}>Updated: {new Date(slmData.selectedAt).toLocaleString()}</p>}
+            </div>
+          )}
+          {slmSelectionMutation.error instanceof Error && (
+            <pre style={{ color: 'red', marginTop: '0.75rem' }}>{slmSelectionMutation.error.message}</pre>
+          )}
+          {slmData && (
+            <details style={{ marginTop: '1rem' }}>
+              <summary>Model catalog</summary>
+              <ul style={{ marginTop: '0.5rem', paddingLeft: '1.25rem' }}>
+                {slmData.models.map((model) => (
+                  <li key={model.id} style={{ marginBottom: '0.5rem' }}>
+                    <strong>{model.label}</strong> — {model.description}{' '}
+                    {!model.available && <span style={{ color: '#dc2626' }}>(missing assets)</span>}
+                    {model.capabilities && (
+                      <span style={{ color: '#475569' }}> · Tracks: {model.capabilities.join(', ')}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </details>
           )}
         </section>
 

@@ -55,6 +55,27 @@ torchrun --nproc_per_node=4 train_unsloth.py --track toolcall \
 ```
 `train_unsloth.py` wires gradient checkpointing, `ddp_find_unused_parameters=False`, and default DeepSpeed ZeRO-2 config (`slm_swap/accelerate_config/deepspeed_zero2.json`) so multi-GPU utilization is automatic.
 
+## SLM Selector (Dashboard)
+Operators can now choose which SLM checkpoint becomes the default baseline for the next fine-tuning pass—either a Hugging Face base model or one of our local adapters.
+
+1. Edit `slm_swap/model_catalog.json` to add/remove entries (each entry can point at an HF repo id or local folder such as `slm_swap/04_ft/adapter_structured`).
+2. Start `backend` + `frontend` (both `npm run dev`). The Operations Console shows a **SLM Fine-Tune Selector** panel where you can pick any available model (unavailable entries are disabled).
+3. Selection is persisted to `slm_swap/model_selection.json`; backend consumers can read it directly or via HTTP.
+
+API surface:
+
+```bash
+# List catalog + current selection
+curl http://localhost:4000/api/slm/models
+
+# Update selection
+curl -X POST http://localhost:4000/api/slm/select \
+  -H "Content-Type: application/json" \
+  -d '{"modelId":"hf-phi-4-mini"}'
+```
+
+Training scripts can read the JSON to decide which checkpoint to fine-tune or evaluate next.
+
 ## Hugging Face Upload Helper
 GitHub blocks binary blobs larger than 100 MB, so push adapters, eval logs, or datasets to a private Hugging Face repo until you are ready to make them public.
 
@@ -91,6 +112,9 @@ python slm_swap/hf_upload.py \
 ```
 
 Use `--repo-type dataset` to upload JSONL corpora instead of model weights, `--path-in-repo <subdir>` to pin the destination folder, and rerun the script any time you need to sync large assets with the Hub.
+
+## TODO / Upcoming
+- [ ] Auto-trigger training scripts based on the selected SLM (dashboard now captures the choice between Hugging Face bases and local fine-tuned adapters).
 
 ## Repo Map
 - `slm_swap/README.md` — full workflow (datasets, baseline evals, comparisons, fine-tune loop).

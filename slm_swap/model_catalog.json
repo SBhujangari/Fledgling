@@ -1,0 +1,43 @@
+[
+  {
+    "id": "hf-phi-4-mini",
+    "label": "Phi-4-mini (HF base)",
+    "source": "huggingface",
+    "modelId": "microsoft/phi-4-mini",
+    "description": "4B Phi checkpoint tuned for instruction following; fast default baseline.",
+    "capabilities": ["structured", "toolcall"],
+    "default": true
+  },
+  {
+    "id": "hf-llama-3.1-8b",
+    "label": "Llama-3.1 8B Instruct (HF base)",
+    "source": "huggingface",
+    "modelId": "meta-llama/Llama-3.1-8B-Instruct",
+    "description": "High-capacity teacher candidate; more expensive but strongest quality.",
+    "capabilities": ["structured", "toolcall"]
+  },
+  {
+    "id": "hf-qwen2.5-7b",
+    "label": "Qwen2.5 7B Instruct (HF base)",
+    "source": "huggingface",
+    "modelId": "Qwen/Qwen2.5-7B-Instruct",
+    "description": "Efficient multilingual-capable base; great for JSON-heavy tasks.",
+    "capabilities": ["structured"]
+  },
+  {
+    "id": "adapter-structured",
+    "label": "Structured track adapter (local)",
+    "source": "local_adapter",
+    "path": "slm_swap/04_ft/adapter_structured",
+    "description": "Latest LoRA adapter targeting strict JSON extraction.",
+    "capabilities": ["structured"]
+  },
+  {
+    "id": "adapter-toolcall",
+    "label": "Tool-call track adapter (local)",
+    "source": "local_adapter",
+    "path": "slm_swap/04_ft/adapter_toolcall",
+    "description": "Latest LoRA adapter tuned for Hermes tool calling format.",
+    "capabilities": ["toolcall"]
+  }
+]
