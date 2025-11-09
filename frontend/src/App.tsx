@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import HistoryPage from './pages/HistoryPage';
-import TuningPage from './pages/TuningPage';
+import PlaygroundPage from './pages/PlaygroundPage';
+import AgentDetailPage from './pages/AgentDetailPage';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/history" element={<HistoryPage />} />
-        <Route path="/tuning" element={<TuningPage />} />
+        <Route path="/playground" element={<PlaygroundPage />} />
+        <Route path="/agent/:agentId" element={<AgentDetailPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -34,8 +34,14 @@ export interface Agent {
 
 export interface AgentResponse {
   id: string
+  name: string
+  task_description: string
+  original_llm: string
+  slm_model: string
   last_updated_at: string
   last_trained_model_path: string | null
+  accuracy: number | null
+  model_costs_saved: number | null
 }
 
 export interface TracesResponse {

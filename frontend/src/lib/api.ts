@@ -27,8 +27,9 @@ export const api = {
   getAgents: () => fetchAPI<AgentResponse[]>("/api/agents"),
   registerAgent: (data: {
     id: string
-    name?: string
-    description?: string
+    name: string
+    taskDescription: string
+    originalLLM: string
     tags?: string[]
     langfuseMetadataKey?: string
     lastTrainedModelPath?: string

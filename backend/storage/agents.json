@@ -1,0 +1,20 @@
+{
+  "agents": [
+    {
+      "id": "demo-agent",
+      "name": "mastra-generate",
+      "lastTrainedModelPath": null,
+      "createdAt": "2025-11-09T02:06:09.395Z",
+      "updatedAt": "2025-11-09T02:06:09.395Z"
+    },
+    {
+      "id": "research-agent",
+      "name": "Research Agent",
+      "lastTrainedModelPath": null,
+      "accuracy": 94,
+      "modelCostsSaved": 405,
+      "createdAt": "2025-11-09T02:06:17.868Z",
+      "updatedAt": "2025-11-09T02:06:17.868Z"
+    }
+  ]
+}
