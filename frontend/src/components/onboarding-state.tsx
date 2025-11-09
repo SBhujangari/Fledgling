@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Zap, ArrowRight } from "lucide-react"
+import { useConnectLangFuse } from "@/hooks/useLangFuse"
 
 interface OnboardingStateProps {
   onComplete: () => void
@@ -16,31 +17,20 @@ export function OnboardingState({ onComplete }: OnboardingStateProps) {
   const [secretKey, setSecretKey] = useState("")
   const [baseUrl, setBaseUrl] = useState("https://cloud.langfuse.com")
 
+  const connectLangFuse = useConnectLangFuse()
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // START: Hard-coded mock - replace with actual API call to LangFuse
-    // API endpoint: POST /api/langfuse/connect
-    // Payload: { publicKey, secretKey, baseUrl }
-    // Expected response: { success: boolean, message: string, data: { projectInfo } }
-    fetch("/api/langfuse/connect", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ publicKey, secretKey, baseUrl }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          onComplete()
-        } else {
-          console.error(data.message)
-        }
-      })
-      .catch((error) => {
-        console.error("Error connecting to LangFuse:", error)
-      })
-    // END: Hard-coded mock
+    connectLangFuse.mutate(
+      { publicKey, secretKey, baseUrl },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            onComplete()
+          }
+        },
+      }
+    )
   }
 
   return (
