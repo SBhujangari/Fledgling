@@ -69,7 +69,7 @@ export default function AgentDetailPage() {
       <div className="min-h-screen bg-background">
         <Navigation />
         <div className="w-full h-full px-4 sm:px-6 lg:px-8 py-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors mb-4">
+          <Link to="/dashboard" className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors mb-4">
             <ArrowLeft className="size-4" />
             <span>Back to Dashboard</span>
           </Link>
@@ -89,7 +89,7 @@ export default function AgentDetailPage() {
       <div className="w-full h-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header with back button */}
         <div>
-          <Link to="/" className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors mb-4">
+          <Link to="/dashboard" className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors mb-4">
             <ArrowLeft className="size-4" />
             <span>Back to Dashboard</span>
           </Link>
@@ -228,7 +228,7 @@ export default function AgentDetailPage() {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "var(--card)",
+                        backgroundColor: "oklch(0.998 0.005 75)",
                         border: "1px solid var(--border)",
                         borderRadius: "8px",
                         color: "var(--foreground)",
@@ -246,10 +246,10 @@ export default function AgentDetailPage() {
                     <Line
                       type="monotone"
                       dataKey="slm"
-                      stroke="var(--accent)"
+                      stroke="var(--primary-green)"
                       strokeWidth={2}
                       name="Fine-tuned SLM"
-                      dot={{ fill: "var(--accent)" }}
+                      dot={{ fill: "var(--primary-green)" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -279,7 +279,7 @@ export default function AgentDetailPage() {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "var(--card)",
+                        backgroundColor: "oklch(0.998 0.005 75)",
                         border: "1px solid var(--border)",
                         borderRadius: "8px",
                         color: "var(--foreground)",
@@ -303,10 +303,10 @@ export default function AgentDetailPage() {
                     <Line
                       type="monotone"
                       dataKey="slm"
-                      stroke="var(--accent)"
+                      stroke="var(--primary-green)"
                       strokeWidth={2}
                       name="Fine-tuned SLM"
-                      dot={{ fill: "var(--accent)" }}
+                      dot={{ fill: "var(--primary-green)" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
