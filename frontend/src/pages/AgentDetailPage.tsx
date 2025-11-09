@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts"
-import { ArrowLeft, Cpu, Database, Activity } from "lucide-react"
+import { ArrowLeft, Cpu, Database, Activity, FileText } from "lucide-react"
 import { useAgents } from "@/hooks/useAgents"
+import { useQuery } from "@tanstack/react-query"
+import { api } from "@/lib/api"
 
 // Mock data for cost comparison (per agent)
 const getMockCostData = () => [
@@ -52,6 +54,12 @@ export default function AgentDetailPage() {
   const { data: agentsData, isLoading, error } = useAgents()
 
   const agent = agentsData?.find(a => a.id === agentId)
+  
+  const { data: tools = [] } = useQuery({
+    queryKey: ["tools", agentId],
+    queryFn: () => api.getTools(agentId),
+    enabled: !!agentId && !!agent,
+  })
 
   if (isLoading) {
     return (
@@ -106,6 +114,74 @@ export default function AgentDetailPage() {
             </Button>
           </div>
         </div>
+
+        {/* Agent Configuration Card */}
+        {(agent.instructions || (tools && tools.length > 0)) && (
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <CardTitle className="text-foreground flex items-center gap-2">
+                <FileText className="size-5 text-primary" />
+                Agent Configuration
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Instructions and tools available to this agent
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Instructions */}
+              {agent.instructions && (
+                <div>
+                  <Label className="text-sm font-semibold text-foreground mb-2 block">
+                    System Instructions
+                  </Label>
+                  <div className="p-4 bg-muted/50 rounded-lg border border-border max-h-64 overflow-y-auto">
+                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                      {agent.instructions}
+                    </pre>
+                  </div>
+                </div>
+              )}
+              
+              {/* Tools */}
+              {tools && tools.length > 0 && (
+                <div>
+                  <Label className="text-sm font-semibold text-foreground mb-3 block">
+                    Available Tools ({tools.length})
+                  </Label>
+                  <div className="space-y-2">
+                    {tools.map((tool) => (
+                      <div
+                        key={tool.id}
+                        className="p-3 bg-muted/30 rounded-lg border border-border"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="font-semibold text-foreground">{tool.name}</p>
+                            {tool.description && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {tool.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {tool.inputSchema != null && (
+                          <details className="mt-2">
+                            <summary className="text-xs text-muted-foreground cursor-pointer">
+                              View parameters
+                            </summary>
+                            <pre className="mt-2 text-xs bg-background p-2 rounded border border-border overflow-x-auto">
+                              {JSON.stringify(tool.inputSchema as Record<string, unknown>, null, 2)}
+                            </pre>
+                          </details>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* 3 Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

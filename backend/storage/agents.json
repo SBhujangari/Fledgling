@@ -2,19 +2,40 @@
   "agents": [
     {
       "id": "demo-agent",
-      "name": "mastra-generate",
+      "name": "QA Agent",
+      "taskDescription": "Answers user questions with grounded recommendations",
+      "instructions": "You are a reasoning assistant. Reasoning Effort: High. Think hard and a lot when given a problem and try to employ a COT approach.\n1. Think through problem explicitly and break it down into smaller subtasks.\n2. Call the tool 'getLocation' to get the user's location if relevant to their request.\n3. After using tools, synthesize a concise final answer in 2-3 sentences referencing the retrieved location when relevant.\nReturn the final answer as normal assistant text (no tool syntax).",
+      "originalLLM": "openai/gpt-5-nano",
+      "slmModel": "llama-3-8b",
+      "tags": [
+        "demo",
+        "qa"
+      ],
       "lastTrainedModelPath": null,
-      "createdAt": "2025-11-09T02:06:09.395Z",
-      "updatedAt": "2025-11-09T02:06:09.395Z"
+      "toolIds": [
+        "demo-agent::getLocation"
+      ],
+      "createdAt": "2025-11-09T05:48:07.425Z",
+      "updatedAt": "2025-11-09T05:48:07.425Z"
     },
     {
       "id": "research-agent",
-      "name": "Research Agent",
+      "name": "Research Strategist",
+      "taskDescription": "Brainstorms and evaluates product bets with dataset-backed reasoning",
+      "instructions": "You are a research strategist. Evaluate the user's hypothesis, gather supporting info via tools, and return a structured recommendation with risks and next steps.",
+      "originalLLM": "openai/gpt-5-medium",
+      "slmModel": "llama-3-8b",
+      "tags": [
+        "demo",
+        "research"
+      ],
       "lastTrainedModelPath": null,
-      "accuracy": 94,
-      "modelCostsSaved": 405,
-      "createdAt": "2025-11-09T02:06:17.868Z",
-      "updatedAt": "2025-11-09T02:06:17.868Z"
+      "toolIds": [
+        "research-agent::fetchDataset",
+        "research-agent::writeMemo"
+      ],
+      "createdAt": "2025-11-09T05:48:07.425Z",
+      "updatedAt": "2025-11-09T05:48:07.425Z"
     }
   ]
 }
