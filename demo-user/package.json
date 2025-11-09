@@ -1,0 +1,31 @@
+{
+  "name": "@ai-atl/demo-user",
+  "version": "0.1.0",
+  "description": "Demo app using Mastra agent with Langfuse tracing",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^0.0.66",
+    "@azure/openai": "^2.0.0",
+    "@fledgling/tracer": "workspace:*",
+    "@langfuse/otel": "^4.4.1",
+    "@langfuse/tracing": "^4.4.1",
+    "@mastra/core": "^0.24.0",
+    "@opentelemetry/sdk-trace-node": "^2.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "undici": "^6.22.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
