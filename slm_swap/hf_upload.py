@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 from typing import Iterable, List, Optional
 
-from huggingface_hub import HfApi, HfFolder
+from huggingface_hub import HfApi, utils as hf_utils
 from huggingface_hub.utils import HfHubHTTPError
 
 
@@ -94,7 +94,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def resolve_token(provided: Optional[str]) -> str:
-    token = provided or os.environ.get("HUGGING_FACE_HUB_TOKEN") or HfFolder.get_token()
+    token = provided or os.environ.get("HUGGING_FACE_HUB_TOKEN") or hf_utils.get_token()
     if not token:
         raise SystemExit(
             "Missing Hugging Face token. Pass --token, set HUGGING_FACE_HUB_TOKEN, "
