@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Zap } from "lucide-react"
+import { Zap, User, Settings } from "lucide-react"
 
 export function Navigation() {
   const location = useLocation()
@@ -21,41 +21,36 @@ export function Navigation() {
             <span className="text-xl font-semibold text-foreground">Fledgling</span>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className={`text-sm font-medium transition-colors ${
-                isActive("/") 
-                  ? "text-foreground" 
+                isActive("/")
+                  ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Dashboard
             </Link>
             <Link
-              to="/testing"
+              to="/playground"
               className={`text-sm font-medium transition-colors ${
-                isActive("/testing") 
-                  ? "text-foreground" 
+                isActive("/playground")
+                  ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Testing
-            </Link>
-            <Link
-              to="/tuning"
-              className={`text-sm font-medium transition-colors ${
-                isActive("/tuning") 
-                  ? "text-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Tuning
+              Playground
             </Link>
           </div>
         </div>
-        <Button variant="outline" size="sm">
-          Settings
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon">
+            <User className="size-5" />
+          </Button>
+          <Button variant="ghost" size="icon">
+            <Settings className="size-5" />
+          </Button>
+        </div>
       </div>
     </nav>
   )

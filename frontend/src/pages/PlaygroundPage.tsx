@@ -1,11 +1,11 @@
 import { Navigation } from "@/components/navigation"
-import { HistoryComparison } from "@/components/history-comparison"
+import { Playground } from "@/components/playground"
 
-export default function HistoryPage() {
+export default function PlaygroundPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <HistoryComparison />
+      <Playground />
     </div>
   )
 }

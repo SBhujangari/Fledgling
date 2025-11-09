@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Settings, Cpu, Database, Activity } from "lucide-react"
+import { Settings, Cpu, Database, Activity, AlertCircle, Target, Download } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, Target, Download } from "lucide-react"
 import { useState } from "react"
 
 export default function TuningPage() {
@@ -217,13 +216,13 @@ export default function TuningPage() {
               {/* API endpoint: GET /api/models/current */}
               {/* Expected response: { name, description, parameters, contextWindow, topic } */}
               <div>
-                <Label className="text-sm text-muted-foreground">Model Name</Label>
+                <Label className="text-sm text-muted-foreground">Model Arch</Label>
                 <p className="text-lg font-semibold text-foreground mt-1">Llama-3.2-1B</p>
               </div>
               <div>
-                <Label className="text-sm text-muted-foreground">Topic Specification</Label>
+                <Label className="text-sm text-muted-foreground">Task Specification</Label>
                 <p className="text-foreground mt-1">
-                  General purpose language model - Optimized for conversational tasks and text generation
+                  Solves the user's workflow for classifying financial documents into investor reports, company reports, and tax docs.
                 </p>
               </div>
               <div>
@@ -251,7 +250,7 @@ export default function TuningPage() {
                 Training Status
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Current training progress
+                Currently Training...
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
