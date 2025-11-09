@@ -27,6 +27,7 @@ export interface LangfuseTrace {
   id: string;
   name?: string;
   metadata?: Record<string, unknown> | null;
+  status?: string;
   timestamp?: string;
   createdAt?: string;
   updatedAt?: string;

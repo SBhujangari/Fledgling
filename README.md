@@ -58,6 +58,28 @@ torchrun --nproc_per_node=4 train_unsloth.py --track toolcall \
 ## Hugging Face Upload Helper
 GitHub blocks binary blobs larger than 100 MB, so push adapters, eval logs, or datasets to a private Hugging Face repo until you are ready to make them public.
 
+1. Copy `backend/.env.example` → `backend/.env` and set `HF_UPLOAD_TOKEN` to a **write-scoped** Hugging Face token (you can optionally override the Python interpreter with `HF_UPLOAD_PYTHON`).
+2. Start the backend + frontend (`npm run dev` in each folder). The dashboard now exposes an **Hugging Face Upload** panel where operators can pick target folders, tweak the commit message, and ship artifacts with one click.
+
+The backend exposes the same workflow over HTTP so you can call it from other systems:
+
+```bash
+curl -X POST http://localhost:4000/api/hf/upload \
+  -H "Content-Type: application/json" \
+  -d '{
+    "repoId": "your-username/slm-adapters",
+    "paths": [
+      "slm_swap/04_ft/adapter_structured",
+      "slm_swap/04_ft/adapter_toolcall"
+    ],
+    "private": true,
+    "autoSubdir": true,
+    "commitMessage": "sync adapters via API"
+  }'
+```
+
+Under the hood both the CLI and HTTP endpoints call `slm_swap/hf_upload.py`, so you can still run it manually when scripting larger workflows:
+
 ```bash
 huggingface-cli login  # or export HUGGING_FACE_HUB_TOKEN
 python slm_swap/hf_upload.py \
