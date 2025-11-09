@@ -1,4 +1,4 @@
-import type { AgentResponse, TracesResponse } from "@/types"
+import type { AgentResponse, TracesResponse, ToolResponse } from "@/types"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"
 
@@ -29,6 +29,7 @@ export const api = {
     id: string
     name: string
     taskDescription: string
+    instructions: string
     originalLLM: string
     tags?: string[]
     langfuseMetadataKey?: string
@@ -65,5 +66,10 @@ export const api = {
         body: JSON.stringify(data),
       }
     ),
-}
 
+  // Tools
+  getTools: (agentId?: string) => {
+    const queryParams = agentId ? `?agentId=${encodeURIComponent(agentId)}` : ""
+    return fetchAPI<ToolResponse[]>(`/api/tools${queryParams}`)
+  },
+}

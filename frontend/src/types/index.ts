@@ -16,6 +16,7 @@ export interface HistoryItem {
   prompt: string
   llmResponse: ChatResponse
   slmResponse: ChatResponse
+  slmFallback?: boolean
 }
 
 export interface Iteration {
@@ -32,16 +33,27 @@ export interface Agent {
   currentAccuracy: number
 }
 
+export interface ToolResponse {
+  id: string
+  name: string
+  description?: string
+  inputSchema?: unknown
+  outputSchema?: unknown
+  metadata?: Record<string, unknown> | null
+}
+
 export interface AgentResponse {
   id: string
   name: string
   task_description: string
+  instructions: string
   original_llm: string
   slm_model: string
   last_updated_at: string
   last_trained_model_path: string | null
   accuracy: number | null
   model_costs_saved: number | null
+  tool_ids: string[]
 }
 
 export interface TracesResponse {
@@ -50,4 +62,3 @@ export interface TracesResponse {
   generations: unknown[]
   samples: unknown[]
 }
-

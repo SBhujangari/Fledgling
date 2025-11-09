@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 
 import { listAgents, registerAgent } from '../service/store/agentStore';
+import { registerTools } from '../service/store/toolStore';
 
 const router = Router();
 
@@ -10,19 +11,33 @@ router.get('/', async (_req: Request, res: Response) => {
     id: agent.id,
     name: agent.name,
     task_description: agent.taskDescription,
+    instructions: agent.instructions,
     original_llm: agent.originalLLM,
     slm_model: agent.slmModel,
     last_updated_at: agent.updatedAt,
     last_trained_model_path: agent.lastTrainedModelPath ?? null,
     accuracy: agent.accuracy ?? null,
     model_costs_saved: agent.modelCostsSaved ?? null,
+    tool_ids: agent.toolIds ?? [],
   }));
 
   res.json(payload);
 });
 
 router.post('/', async (req: Request, res: Response) => {
-  const { id, name, taskDescription, originalLLM, tags, langfuseMetadataKey, lastTrainedModelPath, accuracy, modelCostsSaved } = req.body ?? {};
+  const {
+    id,
+    name,
+    taskDescription,
+    instructions,
+    originalLLM,
+    tags,
+    langfuseMetadataKey,
+    lastTrainedModelPath,
+    accuracy,
+    modelCostsSaved,
+    tools,
+  } = req.body ?? {};
 
   if (typeof id !== 'string' || id.trim().length === 0) {
     return res.status(400).json({ error: 'id is required' });
@@ -36,21 +51,44 @@ router.post('/', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'taskDescription is required' });
   }
 
+  if (typeof instructions !== 'string' || instructions.trim().length === 0) {
+    return res.status(400).json({ error: 'instructions is required' });
+  }
+
   if (typeof originalLLM !== 'string' || originalLLM.trim().length === 0) {
     return res.status(400).json({ error: 'originalLLM is required' });
   }
 
   try {
+    const normalizedTools = Array.isArray(tools)
+      ? tools.map((tool: any, index: number) => ({
+          id:
+            typeof tool?.id === 'string' && tool.id.trim().length > 0
+              ? tool.id.trim()
+              : `${id.trim()}::${typeof tool?.name === 'string' ? tool.name : `tool-${index + 1}`}`,
+          name: typeof tool?.name === 'string' ? tool.name : undefined,
+          description: typeof tool?.description === 'string' ? tool.description : undefined,
+          inputSchema: tool?.inputSchema ?? tool?.parameters ?? undefined,
+          outputSchema: tool?.outputSchema,
+          metadata: tool?.metadata ?? null,
+        }))
+      : undefined;
+
+    const registeredTools = await registerTools(normalizedTools);
+    const toolIds = registeredTools.map((tool) => tool.id);
+
     const agent = await registerAgent({
       id: id.trim(),
       name: name.trim(),
       taskDescription: taskDescription.trim(),
+      instructions: instructions.trim(),
       originalLLM: originalLLM.trim(),
       tags,
       langfuseMetadataKey,
       lastTrainedModelPath,
       accuracy,
       modelCostsSaved,
+      toolIds,
     });
 
     res.status(201).json(agent);
