@@ -1,0 +1,51 @@
+{
+  "model_version_id": "f6d8190ebe88535c",
+  "timestamp": "2025-11-09T01:34:01.041609+00:00",
+  "hyperparams": {
+    "r": 64,
+    "alpha": 16,
+    "dropout": 0.1,
+    "lr": 0.0002,
+    "epochs": 3,
+    "seq_len": 2048,
+    "batch_size": 1,
+    "grad_accum_steps": 8,
+    "bf16": true,
+    "deepspeed_config": "/home/gabriel/Desktop/AI_ATL25/slm_swap/accelerate_config/deepspeed_zero2.json",
+    "lr_scheduler": "cosine",
+    "warmup_ratio": 0.05
+  },
+  "dataset": {
+    "track": "structured",
+    "train_path": "02_dataset/structured/train.jsonl",
+    "val_path": "02_dataset/structured/val.jsonl",
+    "train_size": 300,
+    "val_size": 60
+  },
+  "metrics": {
+    "train": {
+      "train_loss": 1.053878082517992
+    },
+    "validation": {
+      "eval_loss": 0.5580969452857971,
+      "hf_eval": {
+        "eval_loss": 0.5580969452857971,
+        "eval_runtime": 1.9411,
+        "eval_samples_per_second": 30.911,
+        "eval_steps_per_second": 15.456,
+        "schema_json_valid_rate": 0.9666666666666667,
+        "schema_exact_match_rate": 0.3,
+        "schema_field_precision": 0.636,
+        "schema_field_recall": 0.6115384615384616,
+        "schema_field_f1": 0.6235294117647059
+      },
+      "schema": {
+        "json_valid_rate": 0.9666666666666667,
+        "exact_match_rate": 0.3,
+        "field_precision": 0.636,
+        "field_recall": 0.6115384615384616,
+        "field_f1": 0.6235294117647059
+      }
+    }
+  }
+}

@@ -65,3 +65,11 @@ See `slm_swap/README.md` for end-to-end instructions covering dataset prep, Lang
 
 ## Future Roadmap — Model Graders vs Teacher–Student
 We may later layer in OpenAI’s model-grader-driven reinforcement fine-tuning (RFT) workflow that relies on explicit reward functions to shape reasoning behavior (inspiration: [OpenAI Cookbook example](https://cookbook.openai.com/examples/reinforcement_fine_tuning)). That approach differs from today’s teacher/student plan (`AGENT.md`) which prioritizes swapping in a local SLM, matching teacher metrics track-by-track, and only running Unsloth QLoRA when the SLM underperforms. For now this section is informational only—no grader-based automation is scheduled for implementation yet, but keeping the contrast documented helps if we decide to expand the roadmap.
+
+## Roadmap — Reinforcement Fine‑Tuning (RFT)
+- Default posture: keep SFT-only for current structured JSON and tool‑calling tracks; RFT is not required to achieve a fast, automated LLM→SLM swap.
+- When to consider RFT: SFT saturates below target metrics, or new tasks demand complex reasoning/subjective behavior with stable, programmatic reward signals tied to business outcomes.
+- Prerequisites: SFT warm‑start; trajectory capture; observation masking; unified reward interface from existing objective metrics; KL‑regularized updates to a reference; strict, deterministic acceptance gates; full Langfuse traceability.
+- Migration path: warm‑start from SFT adapters; define rewards from existing metrics (e.g., json_valid_rate, exact_match_rate, name/args correctness); run short, tightly KL‑regularized RL phases with frequent holdout evaluation; block deployment unless objective thresholds are met or exceeded.
+- Risks: reward hacking, higher compute/ops cost, regressions on objective metrics; mitigate with KL control, no‑regression gates, and frequent holdout checks.
+- Status: not in v0/v1; staged for later if SFT caps out or new reasoning‑heavy tasks are introduced.

@@ -1,0 +1,8 @@
+{
+  "valid_call_rate": 0.8,
+  "name_match_rate": 0.8,
+  "args_exact_rate": 0.64,
+  "args_precision": 0.7777777777777778,
+  "args_recall": 0.7129629629629629,
+  "args_f1": 0.7439613526570048
+}

@@ -5,15 +5,106 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from datetime import datetime
+from numbers import Number
 from typing import Dict, List
 
+os.environ.setdefault("TORCHDYNAMO_DISABLE", "1")
+
+from unsloth import FastLanguageModel
+
+import torch
 from datasets import Dataset
+from eval import StructuredMetricTracker, ToolcallMetricTracker
 from langfuse_helpers import langfuse_trace
+from model_version import generate_model_id
 from prompts import get_system_prompt
 from slm_client import DEFAULT_SLM_MODEL_PATH
-from unsloth import FastLanguageModel
-from transformers import TrainingArguments
+from transformers import TrainerCallback, TrainingArguments
 from trl import SFTTrainer
+
+
+def _is_main_process() -> bool:
+    return int(os.environ.get("RANK", "0")) == 0
+
+
+def _unwrap_model(model):
+    return getattr(model, "module", model)
+
+
+def _sanitize_metrics(metrics: Dict[str, float]) -> Dict[str, float]:
+    clean: Dict[str, float] = {}
+    for key, value in (metrics or {}).items():
+        if isinstance(value, Number):
+            clean[key] = float(value)
+        else:
+            try:
+                clean[key] = float(value)  # type: ignore[arg-type]
+            except (TypeError, ValueError):
+                continue
+    return clean
+
+
+def generate_completion(
+    model,
+    tokenizer,
+    prompt: str,
+    track: str,
+    max_new_tokens: int = 256,
+) -> str:
+    system_prompt = get_system_prompt(track)
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": prompt},
+    ]
+    chat_text = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+    inputs = tokenizer(
+        chat_text,
+        return_tensors="pt",
+    )
+    device = next(model.parameters()).device
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            temperature=None,
+        )
+    gen_tokens = outputs[0][inputs["input_ids"].shape[-1] :]
+    return tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
+
+
+def compute_schema_metrics(
+    model,
+    tokenizer,
+    val_rows: List[Dict[str, str]],
+    track: str,
+) -> Dict[str, float]:
+    if not val_rows:
+        return {}
+
+    model_inference = FastLanguageModel.for_inference(model)
+    was_training = model_inference.training
+    model_inference.eval()
+    tracker = (
+        StructuredMetricTracker() if track == "structured" else ToolcallMetricTracker()
+    )
+    for row in val_rows:
+        prediction = generate_completion(
+            model_inference,
+            tokenizer,
+            prompt=row["prompt"],
+            track=track,
+        )
+        tracker.update(prediction, row["completion"])
+    if was_training:
+        model_inference.train()
+    return tracker.summary()
 
 
 def load_jsonl(path: str) -> List[Dict[str, str]]:
@@ -79,6 +170,34 @@ def main():
     val_ds = Dataset.from_list(val_rows)
 
     max_seq_length = 2048
+    dataset_info = {
+        "track": args.track,
+        "train_path": args.train,
+        "val_path": args.val,
+        "train_size": len(train_rows),
+        "val_size": len(val_rows),
+    }
+    hyperparams = {
+        "r": 64,
+        "alpha": 16,
+        "dropout": 0.1,
+        "lr": 2e-4,
+        "epochs": 3,
+        "seq_len": max_seq_length,
+        "batch_size": 1,
+        "grad_accum_steps": 8,
+        "bf16": True,
+        "deepspeed_config": args.deepspeed_config or None,
+        "lr_scheduler": "cosine",
+        "warmup_ratio": 0.05,
+    }
+    version_timestamp = (
+        os.environ.get("MODEL_VERSION_TIMESTAMP") or datetime.utcnow().isoformat()
+    )
+    model_version_id = generate_model_id(
+        hyperparams, dataset_info, timestamp=version_timestamp
+    )
+    is_main = _is_main_process()
     with langfuse_trace(
         name=f"train-unsloth-{args.track}",
         metadata={
@@ -86,12 +205,17 @@ def main():
             "train_path": args.train,
             "val_path": args.val,
             "output_dir": args.out,
+            "train_size": len(train_rows),
+            "val_size": len(val_rows),
+            "model_version_id": model_version_id,
         },
     ) as trace:
         model, tokenizer = FastLanguageModel.from_pretrained(
             model_name=args.model,
             max_seq_length=max_seq_length,
-            load_in_8bit=True,
+            dtype=None,  # Auto-detect bf16
+            load_in_4bit=False,
+            load_in_8bit=False,  # Disable quantization for multi-GPU training
         )
         tokenizer.pad_token = tokenizer.pad_token or tokenizer.eos_token
 
@@ -110,12 +234,18 @@ def main():
         formatted_val = format_dataset(val_ds, tokenizer, args.track)
 
         training_args = TrainingArguments(
-            per_device_train_batch_size=1,
-            gradient_accumulation_steps=8,
-            learning_rate=2e-4,
-            num_train_epochs=1,
-            bf16=True,
-            logging_steps=10,
+            per_device_train_batch_size=hyperparams["batch_size"],
+            per_device_eval_batch_size=hyperparams["batch_size"],
+            gradient_accumulation_steps=hyperparams["grad_accum_steps"],
+            learning_rate=hyperparams["lr"],
+            num_train_epochs=hyperparams["epochs"],
+            bf16=hyperparams["bf16"],
+            logging_steps=1,
+            logging_strategy="steps",
+            logging_first_step=True,
+            eval_strategy="epoch",
+            lr_scheduler_type=hyperparams["lr_scheduler"],
+            warmup_ratio=hyperparams["warmup_ratio"],
             save_strategy="no",
             report_to="none",
             output_dir=args.out,
@@ -138,22 +268,71 @@ def main():
         metrics = {
             "train_loss": float(train_result.training_loss or 0.0),
         }
-        model.save_pretrained(args.out)
-        tokenizer.save_pretrained(args.out)
-        trace.update(
-            metadata={
-                "hyperparams": {
-                    "r": 64,
-                    "alpha": 16,
-                    "dropout": 0.1,
-                    "lr": 2e-4,
-                    "epochs": 1,
-                    "seq_len": max_seq_length,
+        hf_eval_metrics = _sanitize_metrics(trainer.evaluate())
+        eval_loss = float(hf_eval_metrics.get("eval_loss", 0.0))
+        schema_metrics: Dict[str, float] = {}
+        if is_main:
+            eval_model = _unwrap_model(trainer.model)
+            schema_metrics = compute_schema_metrics(
+                eval_model,
+                tokenizer,
+                val_rows,
+                args.track,
+            )
+            hf_eval_metrics.update(
+                {f"schema_{k}": v for k, v in (schema_metrics or {}).items()}
+            )
+        version_metadata = {
+            "model_version_id": model_version_id,
+            "timestamp": version_timestamp,
+            "hyperparams": hyperparams,
+            "dataset": dataset_info,
+            "metrics": {
+                "train": metrics,
+                "validation": {
+                    "eval_loss": eval_loss,
+                    "hf_eval": hf_eval_metrics,
+                    "schema": schema_metrics,
                 },
-                "metrics": metrics,
-            }
-        )
-        print(json.dumps(metrics, indent=2))
+            },
+        }
+        if is_main:
+            model.save_pretrained(args.out)
+            tokenizer.save_pretrained(args.out)
+            with open(os.path.join(args.out, "VERSION.txt"), "w", encoding="utf-8") as f:
+                f.write(model_version_id + "\n")
+            with open(
+                os.path.join(args.out, "metadata.json"), "w", encoding="utf-8"
+            ) as f:
+                json.dump(version_metadata, f, indent=2)
+            trace.update(
+                metadata={
+                    "hyperparams": hyperparams,
+                    "metrics": {
+                        "train": metrics,
+                        "validation": {
+                            "eval_loss": eval_loss,
+                            "hf_eval": hf_eval_metrics,
+                            "schema": schema_metrics,
+                        },
+                    },
+                    "model_version_id": model_version_id,
+                    "timestamp": version_timestamp,
+                }
+            )
+            print(
+                json.dumps(
+                    {
+                        "model_version_id": model_version_id,
+                        "train_metrics": metrics,
+                        "validation_metrics": {
+                            "eval_loss": eval_loss,
+                            "schema": schema_metrics,
+                        },
+                    },
+                    indent=2,
+                )
+            )
 
 
 if __name__ == "__main__":

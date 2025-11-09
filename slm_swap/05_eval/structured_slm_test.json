@@ -1,0 +1,7 @@
+{
+  "json_valid_rate": 0.88,
+  "exact_match_rate": 0.04,
+  "field_precision": 0.3090909090909091,
+  "field_recall": 0.33497536945812806,
+  "field_f1": 0.32151300236406616
+}

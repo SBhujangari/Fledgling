@@ -7,8 +7,9 @@ import json
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
 import openai
 from clients import build_client
 from langfuse_helpers import langfuse_trace, log_decision_event
@@ -67,6 +68,107 @@ def _f1(tp: int, fp: int, fn: int) -> Tuple[float, float, float]:
     return precision, recall, f1_score
 
 
+def _cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
+    """Compute cosine similarity between two vectors."""
+    v1 = np.array(vec1)
+    v2 = np.array(vec2)
+    if np.linalg.norm(v1) == 0 or np.linalg.norm(v2) == 0:
+        return 0.0
+    return float(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
+
+
+def _get_embedding(text: str, azure_client: Any) -> List[float]:
+    """Get embedding from Azure OpenAI."""
+    try:
+        # Use Azure client to get embeddings
+        response = azure_client.embeddings.create(
+            input=text,
+            model="text-embedding-ada-002"  # Azure embedding model
+        )
+        return response.data[0].embedding
+    except Exception as e:
+        # If embedding fails, return zero vector
+        print(f"Warning: Embedding failed: {e}")
+        return [0.0] * 1536  # text-embedding-ada-002 dimension
+
+
+def compute_semantic_similarity(pred: str, ref: str, azure_client: Any) -> float:
+    """Compute semantic similarity between prediction and reference using embeddings."""
+    pred_embedding = _get_embedding(pred, azure_client)
+    ref_embedding = _get_embedding(ref, azure_client)
+    return _cosine_similarity(pred_embedding, ref_embedding)
+
+
+def llm_judge_score(
+    pred: str,
+    ref: str,
+    track: str,
+    azure_client: Any
+) -> Tuple[float, str]:
+    """
+    Use Azure LLM as judge to score prediction quality on 1-7 scale.
+    Returns normalized score [0,1] and reasoning.
+    """
+    if track == "structured":
+        rubric = """
+Score the prediction on a 1-7 scale:
+7 = Perfect - All fields correct, properly formatted, semantically accurate
+6 = Excellent - Minor formatting differences, content fully correct
+5 = Good - Semantically correct, some non-critical field mismatches
+4 = Acceptable - Core information correct, some missing/extra fields
+3 = Partial - Some correct fields, notable gaps or errors
+2 = Poor - Mostly incorrect or incomplete
+1 = Failed - Invalid or completely wrong output
+"""
+    else:  # toolcall
+        rubric = """
+Score the tool call prediction on a 1-7 scale:
+7 = Perfect - Correct tool name and all arguments with exact values
+6 = Excellent - Correct tool and arguments, minor formatting differences
+5 = Good - Correct tool, semantically correct arguments
+4 = Acceptable - Correct tool, some argument mismatches
+3 = Partial - Correct tool, significant argument errors
+2 = Poor - Wrong tool or mostly incorrect arguments
+1 = Failed - Invalid format or completely wrong call
+"""
+
+    judge_prompt = f"""You are an expert evaluator. Compare the prediction against the reference and score it.
+
+{rubric}
+
+Reference (correct answer):
+{ref}
+
+Prediction (to be scored):
+{pred}
+
+Respond with JSON: {{"score": <1-7>, "reasoning": "<brief explanation>"}}"""
+
+    try:
+        response = azure_client.chat.completions.create(
+            model="gpt-4",  # Will use Azure deployment
+            messages=[
+                {"role": "system", "content": "You are a precise evaluator. Always respond with valid JSON."},
+                {"role": "user", "content": judge_prompt}
+            ],
+            temperature=0.0,
+            max_tokens=200
+        )
+
+        result_text = response.choices[0].message.content.strip()
+        result = json.loads(result_text)
+        score = float(result.get("score", 1))
+        reasoning = result.get("reasoning", "")
+
+        # Normalize to [0, 1]
+        normalized_score = (score - 1) / 6.0  # 1->0, 7->1
+        return normalized_score, reasoning
+
+    except Exception as e:
+        print(f"Warning: LLM judge failed: {e}")
+        return 0.0, f"Error: {str(e)}"
+
+
 def load_jsonl(path: str) -> List[Example]:
     data: List[Example] = []
     with open(path, "r", encoding="utf-8") as f:
@@ -89,13 +191,25 @@ def canonical_json(text: str) -> Tuple[bool, str]:
 
 
 class StructuredMetricTracker:
-    def __init__(self):
+    def __init__(
+        self,
+        use_semantic_similarity: bool = False,
+        use_llm_judge: bool = False,
+        azure_client: Optional[Any] = None,
+        track: str = "structured"
+    ):
         self.processed = 0
         self.valid = 0
         self.exact = 0
         self.tp = 0
         self.fp = 0
         self.fn = 0
+        self.use_semantic_similarity = use_semantic_similarity
+        self.use_llm_judge = use_llm_judge
+        self.azure_client = azure_client
+        self.track = track
+        self.semantic_similarity_sum = 0.0
+        self.judge_score_sum = 0.0
 
     def update(self, pred: str, ref: str) -> EvalStepResult:
         self.processed += 1
@@ -166,6 +280,21 @@ class StructuredMetricTracker:
                 "field_f1": f1_score,
             }
         )
+
+        # Optional: Compute semantic similarity
+        if self.use_semantic_similarity and self.azure_client:
+            sem_sim = compute_semantic_similarity(pred, ref, self.azure_client)
+            self.semantic_similarity_sum += sem_sim
+            per_metrics["semantic_similarity"] = sem_sim
+            details["semantic_similarity"] = sem_sim
+
+        # Optional: Compute LLM judge score
+        if self.use_llm_judge and self.azure_client:
+            judge_score, reasoning = llm_judge_score(pred, ref, self.track, self.azure_client)
+            self.judge_score_sum += judge_score
+            per_metrics["judge_score"] = judge_score
+            details["judge_reasoning"] = reasoning
+
         return EvalStepResult(
             valid=pred_ok,
             exact_match=exact_match,
@@ -177,13 +306,22 @@ class StructuredMetricTracker:
     def summary(self) -> Dict[str, float]:
         denom = self.processed or 1
         precision, recall, f1_score = _f1(self.tp, self.fp, self.fn)
-        return {
+        result = {
             "json_valid_rate": self.valid / denom,
             "exact_match_rate": self.exact / denom,
             "field_precision": precision,
             "field_recall": recall,
             "field_f1": f1_score,
         }
+
+        # Include optional metrics if enabled
+        if self.use_semantic_similarity:
+            result["semantic_similarity_avg"] = self.semantic_similarity_sum / denom
+
+        if self.use_llm_judge:
+            result["judge_score_avg"] = self.judge_score_sum / denom
+
+        return result
 
 
 def eval_structured(preds: List[str], refs: List[str]) -> Dict[str, float]:
@@ -207,7 +345,13 @@ def parse_tool_call(text: str) -> Tuple[bool, str, str, Dict[str, Any]]:
 
 
 class ToolcallMetricTracker:
-    def __init__(self):
+    def __init__(
+        self,
+        use_semantic_similarity: bool = False,
+        use_llm_judge: bool = False,
+        azure_client: Optional[Any] = None,
+        track: str = "toolcall"
+    ):
         self.processed = 0
         self.valid_calls = 0
         self.name_matches = 0
@@ -215,6 +359,12 @@ class ToolcallMetricTracker:
         self.tp = 0
         self.fp = 0
         self.fn = 0
+        self.use_semantic_similarity = use_semantic_similarity
+        self.use_llm_judge = use_llm_judge
+        self.azure_client = azure_client
+        self.track = track
+        self.semantic_similarity_sum = 0.0
+        self.judge_score_sum = 0.0
 
     def update(self, pred: str, ref: str) -> EvalStepResult:
         self.processed += 1
@@ -290,6 +440,22 @@ class ToolcallMetricTracker:
                 "args_f1": f1_score,
             }
         )
+
+        # Optional: Compute semantic similarity (on arguments)
+        if self.use_semantic_similarity and self.azure_client and pred_ok and ref_ok:
+            # Compare argument strings
+            sem_sim = compute_semantic_similarity(pred_args_str, ref_args_str, self.azure_client)
+            self.semantic_similarity_sum += sem_sim
+            per_metrics["semantic_similarity"] = sem_sim
+            details["semantic_similarity"] = sem_sim
+
+        # Optional: Compute LLM judge score
+        if self.use_llm_judge and self.azure_client:
+            judge_score, reasoning = llm_judge_score(pred, ref, self.track, self.azure_client)
+            self.judge_score_sum += judge_score
+            per_metrics["judge_score"] = judge_score
+            details["judge_reasoning"] = reasoning
+
         return EvalStepResult(
             valid=pred_ok,
             exact_match=args_match,
@@ -301,7 +467,7 @@ class ToolcallMetricTracker:
     def summary(self) -> Dict[str, float]:
         denom = self.processed or 1
         precision, recall, f1_score = _f1(self.tp, self.fp, self.fn)
-        return {
+        result = {
             "valid_call_rate": self.valid_calls / denom,
             "name_match_rate": self.name_matches / denom,
             "args_exact_rate": self.args_matches / denom,
@@ -309,6 +475,15 @@ class ToolcallMetricTracker:
             "args_recall": recall,
             "args_f1": f1_score,
         }
+
+        # Include optional metrics if enabled
+        if self.use_semantic_similarity:
+            result["semantic_similarity_avg"] = self.semantic_similarity_sum / denom
+
+        if self.use_llm_judge:
+            result["judge_score_avg"] = self.judge_score_sum / denom
+
+        return result
 
 
 def eval_toolcall(preds: List[str], refs: List[str]) -> Dict[str, float]:
@@ -327,6 +502,8 @@ def run_eval(
     adapter: str | None,
     details_path: str | None,
     batch_size: int = 1,
+    use_semantic_similarity: bool = False,
+    use_llm_judge: bool = False,
 ):
     data = load_jsonl(dataset_path)
     total = len(data)
@@ -334,7 +511,28 @@ def run_eval(
         raise ValueError(f"Dataset is empty: {dataset_path}")
     client = build_client(model_kind, adapter)
     system_prompt = get_system_prompt(track)
-    tracker = StructuredMetricTracker() if track == "structured" else ToolcallMetricTracker()
+
+    # Create Azure client for optional metrics if needed
+    azure_client = None
+    if use_semantic_similarity or use_llm_judge:
+        azure_client = build_client("azure", None)
+
+    # Initialize tracker with optional metrics
+    if track == "structured":
+        tracker = StructuredMetricTracker(
+            use_semantic_similarity=use_semantic_similarity,
+            use_llm_judge=use_llm_judge,
+            azure_client=azure_client,
+            track=track
+        )
+    else:
+        tracker = ToolcallMetricTracker(
+            use_semantic_similarity=use_semantic_similarity,
+            use_llm_judge=use_llm_judge,
+            azure_client=azure_client,
+            track=track
+        )
+
     detailed_rows: List[Dict[str, Any]] = []
 
     # Process in batches for SLM (parallel across 4 GPUs), sequentially for Azure
@@ -488,6 +686,16 @@ def main():
         default=8,
         help="Batch size for SLM inference (parallel across 4 GPUs). Default: 8. Use 1 for sequential.",
     )
+    parser.add_argument(
+        "--use-semantic-similarity",
+        action="store_true",
+        help="Enable semantic similarity metric using Azure embeddings (OpenAI Cookbook).",
+    )
+    parser.add_argument(
+        "--use-llm-judge",
+        action="store_true",
+        help="Enable LLM-as-Judge scoring on 1-7 scale using Azure LLM (OpenAI Cookbook).",
+    )
     args = parser.parse_args()
 
     dataset_path = args.dataset or os.path.join(
@@ -507,6 +715,8 @@ def main():
             "dataset": dataset_path,
             "output": output_path,
             "split": args.split,
+            "use_semantic_similarity": args.use_semantic_similarity,
+            "use_llm_judge": args.use_llm_judge,
         },
     ) as trace:
         metrics = run_eval(
@@ -518,6 +728,8 @@ def main():
             adapter=args.adapter,
             details_path=details_path,
             batch_size=args.batch_size,
+            use_semantic_similarity=args.use_semantic_similarity,
+            use_llm_judge=args.use_llm_judge,
         )
         trace.update(
             metadata={
