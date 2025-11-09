@@ -1,37 +1,28 @@
 import { useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SendHorizontal, Sparkles, Zap } from "lucide-react"
+import { Sparkles, Zap } from "lucide-react"
 import { ChatMessage } from "@/components/chat-message"
 import { TraceMessage } from "@/components/trace-message"
 import type { HistoryItem } from "@/types"
 
-export function HistoryComparison() {
+export function Playground() {
+  const [searchParams] = useSearchParams()
+  const llmModel = searchParams.get("llm") || "LLM"
+  const slmModel = searchParams.get("slm") || "SLM"
+
   const [prompt, setPrompt] = useState("")
-  const [selectedIteration, setSelectedIteration] = useState("all")
   const [isLoading, setIsLoading] = useState(false)
   const [liveComparison, setLiveComparison] = useState<HistoryItem | null>(null)
 
   // ============= BACKEND CONNECTION NEEDED =============
-  // TODO: Replace with actual API call to GET /api/iterations
-  // Expected response: Array<{ id: string, label: string, date: string }>
-  const iterations = [
-    { id: "all", label: "All Iterations", date: "" },
-    { id: "iter-3", label: "Iteration 3", date: "2024-01-15" },
-    { id: "iter-2", label: "Iteration 2", date: "2024-01-10" },
-    { id: "iter-1", label: "Iteration 1", date: "2024-01-05" },
-  ]
-  // ============= END BACKEND CONNECTION =============
-
-  // ============= BACKEND CONNECTION NEEDED =============
-  // TODO: Replace with actual API call to GET /api/history?iteration={selectedIteration}
+  // TODO: Replace with actual API call to GET /api/history
   // Expected response: Array<{
   //   id: string,
   //   timestamp: string,
-  //   iteration: string,
   //   prompt: string,
   //   llmResponse: { content: string, toolCalls?: Array<...> },
   //   slmResponse: { content: string, toolCalls?: Array<...> }
@@ -40,7 +31,7 @@ export function HistoryComparison() {
     {
       id: "1",
       timestamp: "2024-01-15 14:23:45",
-      iteration: "Iteration 3",
+      iteration: "",
       prompt: "What is the molecular structure of caffeine?",
       llmResponse: {
         content: "Caffeine (C8H10N4O2) is a purine alkaloid with a complex molecular structure...",
@@ -66,7 +57,7 @@ export function HistoryComparison() {
     {
       id: "2",
       timestamp: "2024-01-14 09:15:22",
-      iteration: "Iteration 2",
+      iteration: "",
       prompt: "Explain the process of glycolysis",
       llmResponse: {
         content: "Glycolysis is a metabolic pathway that converts glucose into pyruvate...",
@@ -78,12 +69,6 @@ export function HistoryComparison() {
   ]
   // ============= END BACKEND CONNECTION =============
 
-  const filteredHistory = Array.isArray(mockHistory)
-    ? selectedIteration === "all"
-      ? mockHistory
-      : mockHistory.filter((item) => item.iteration === selectedIteration)
-    : []
-
   const handleSubmit = async () => {
     if (!prompt.trim()) return
 
@@ -92,7 +77,7 @@ export function HistoryComparison() {
     // ============= BACKEND CONNECTION NEEDED =============
     // TODO: Replace with actual API call
     // POST /api/compare
-    // Body: { prompt: string, iteration: string }
+    // Body: { prompt: string }
     // Expected response: {
     //   llmResponse: { content: string, toolCalls?: Array<...> },
     //   slmResponse: { content: string, toolCalls?: Array<...> }
@@ -103,7 +88,7 @@ export function HistoryComparison() {
       setLiveComparison({
         id: "live",
         timestamp: new Date().toLocaleString(),
-        iteration: selectedIteration,
+        iteration: "",
         prompt: prompt,
         llmResponse: {
           content: "This is a sample LLM response to your prompt...",
@@ -134,20 +119,20 @@ export function HistoryComparison() {
   return (
     <div className="w-full h-full px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Testing</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Playground</h1>
         <p className="text-muted-foreground">Compare LLM and SLM outputs side-by-side and review past interactions</p>
       </div>
 
       {/* Unified Testing Component */}
       <Card className="p-6 mb-8 bg-card border-border">
-        <h2 className="text-xl font-semibold text-foreground mb-6">Testing</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-6">Playground</h2>
         
         {/* LLM and SLM Output Panels */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="size-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">LLM Output</h3>
+              <h3 className="text-lg font-semibold text-foreground">{llmModel}</h3>
             </div>
             {liveComparison ? (
               <div className="min-h-[400px]">
@@ -162,7 +147,7 @@ export function HistoryComparison() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Zap className="size-5 text-accent" />
-              <h3 className="text-lg font-semibold text-foreground">SLM Output</h3>
+              <h3 className="text-lg font-semibold text-foreground">{slmModel}</h3>
             </div>
             {liveComparison ? (
               <div className="min-h-[400px]">
@@ -187,29 +172,12 @@ export function HistoryComparison() {
           <Button 
             onClick={handleSubmit} 
             disabled={isLoading} 
-            className="self-end sm:self-end h-24 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="self-end sm:self-end h-24 w-24 bg-primary hover:bg-primary/90 text-primary-foreground aspect-square"
           >
-            <SendHorizontal className="size-4" />
+            <Zap className="size-8" />
           </Button>
         </div>
       </Card>
-
-      {/* Filter Section */}
-      <div className="flex items-center gap-4 mb-6">
-        <label className="text-sm font-medium text-foreground">Filter by iteration:</label>
-        <Select value={selectedIteration} onValueChange={setSelectedIteration}>
-          <SelectTrigger className="w-full sm:w-64 bg-background border-border">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {iterations.map((iteration) => (
-              <SelectItem key={iteration.id} value={iteration.id}>
-                {iteration.label} {iteration.date && `(${iteration.date})`}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
 
       {/* History Tabs */}
       <Tabs defaultValue="chats" className="w-full">
@@ -219,16 +187,15 @@ export function HistoryComparison() {
         </TabsList>
 
         <TabsContent value="chats" className="mt-6 space-y-6">
-          {filteredHistory.length === 0 ? (
+          {mockHistory.length === 0 ? (
             <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">No history available for this iteration</p>
+              <p className="text-muted-foreground">No history available</p>
             </Card>
           ) : (
-            filteredHistory.map((item) => (
+            mockHistory.map((item) => (
               <Card key={item.id} className="p-6 bg-card border-border">
-                <div className="mb-4 flex items-center justify-between">
+                <div className="mb-4">
                   <span className="text-xs text-muted-foreground">{item.timestamp}</span>
-                  <span className="text-xs font-medium text-primary">{item.iteration}</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                   <div>
@@ -252,35 +219,32 @@ export function HistoryComparison() {
         </TabsContent>
 
         <TabsContent value="traces" className="mt-6 space-y-6">
-          {filteredHistory.length === 0 ? (
-            <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">No traces available for this iteration</p>
+          {liveComparison ? (
+            <Card className="p-6 bg-card border-border">
+              <div className="mb-4">
+                <span className="text-xs text-muted-foreground">{liveComparison.timestamp}</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="size-4 text-primary" />
+                    <span className="text-sm font-semibold text-foreground">LLM Trace</span>
+                  </div>
+                  <TraceMessage prompt={liveComparison.prompt} response={liveComparison.llmResponse} type="llm" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap className="size-4 text-accent" />
+                    <span className="text-sm font-semibold text-foreground">SLM Trace</span>
+                  </div>
+                  <TraceMessage prompt={liveComparison.prompt} response={liveComparison.slmResponse} type="slm" />
+                </div>
+              </div>
             </Card>
           ) : (
-            filteredHistory.map((item) => (
-              <Card key={item.id} className="p-6 bg-card border-border">
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">{item.timestamp}</span>
-                  <span className="text-xs font-medium text-primary">{item.iteration}</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="size-4 text-primary" />
-                      <span className="text-sm font-semibold text-foreground">LLM Trace</span>
-                    </div>
-                    <TraceMessage prompt={item.prompt} response={item.llmResponse} type="llm" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Zap className="size-4 text-accent" />
-                      <span className="text-sm font-semibold text-foreground">SLM Trace</span>
-                    </div>
-                    <TraceMessage prompt={item.prompt} response={item.slmResponse} type="slm" />
-                  </div>
-                </div>
-              </Card>
-            ))
+            <Card className="p-12 bg-card border-border text-center">
+              <p className="text-muted-foreground">Run a query above to see traces</p>
+            </Card>
           )}
         </TabsContent>
       </Tabs>

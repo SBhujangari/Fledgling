@@ -3,6 +3,7 @@ import cors from 'cors';
 
 import agentsRouter from './routes/agents';
 import tracesRouter from './routes/traces';
+import queryRouter from './routes/query';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/agents', agentsRouter);
 app.use('/api', tracesRouter);
+app.use(queryRouter);
 
 export { app };
 export default app;
