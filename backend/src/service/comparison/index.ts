@@ -26,12 +26,17 @@ export async function compareAgentModels(request: ComparisonRequest): Promise<Co
 
   const tools = agent.toolIds?.length ? await listToolsByIds(agent.toolIds) : [];
 
+  // Enhance prompt with autonomous execution instructions for demo
+  const enhancedPrompt = tools.length > 0
+    ? `${request.prompt}\n\nIMPORTANT: You are an autonomous agent. Do not ask the user any questions. Instead:\n- Reason through the problem step by step\n- Use available tools proactively to gather information\n- Make multiple tool calls as needed to solve the task\n- Synthesize information from tool results\n- Provide a complete solution without asking for clarification\n- Act decisively and independently`
+    : request.prompt;
+
   const payload: AgentExecutionPayload = {
     agentId: agent.id,
     agentName: agent.name,
     instructions: agent.instructions || agent.taskDescription,
     tools,
-    prompt: request.prompt,
+    prompt: enhancedPrompt,
   };
 
   // Helper to resolve model string to model instance
@@ -54,7 +59,7 @@ export async function compareAgentModels(request: ComparisonRequest): Promise<Co
 
   const hasCustomSlm = Boolean(agent.slmModel);
   const isValidSlmModel = hasCustomSlm && typeof agent.slmModel === 'string' && agent.slmModel.includes('/');
-  const defaultSlmModel = 'meta-llama/llama-3.1-8b-instruct';
+  const defaultSlmModel = 'openai/gpt-5';
 
   const slmConfig: ModelEndpointConfig = request.slmModelOverride ?? {
     provider: 'mastra',

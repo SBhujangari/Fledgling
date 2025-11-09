@@ -14,7 +14,7 @@
       ],
       "lastTrainedModelPath": null,
       "accuracy": 92,
-      "modelCostsSaved": 324.50,
+      "modelCostsSaved": 337.8571022178846,
       "toolIds": [
         "customer-service-agent::lookupOrder",
         "customer-service-agent::trackDelivery",
@@ -25,9 +25,10 @@
         "customer-service-agent::processRefund"
       ],
       "iterations": 15,
-      "trainingDataSize": 784,
+      "trainingDataSize": 827,
       "createdAt": "2025-11-09T07:51:48.933Z",
-      "updatedAt": "2025-11-09T07:51:48.933Z"
+      "updatedAt": "2025-11-09T08:58:48.333Z",
+      "isTraining": false
     },
     {
       "id": "research-agent",
