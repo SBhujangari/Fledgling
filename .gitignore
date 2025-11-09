@@ -22,7 +22,6 @@ build/
 *.tsbuildinfo
 .next/
 out/
-fledgling-demo-client/
 
 # IDE and editor files
 .vscode/

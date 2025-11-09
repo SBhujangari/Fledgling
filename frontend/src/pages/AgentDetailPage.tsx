@@ -291,10 +291,10 @@ export default function AgentDetailPage() {
                 Cost per batch on 20% test dataset split (in USD)
               </p>
             </div>
-            <Card className="border-border bg-card">
+            <Card className="border-border bg-muted/30">
               <CardContent className="p-6">
                 <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={costData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <LineChart data={costData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="batch" stroke="var(--muted-foreground)" style={{ fontSize: "12px" }} />
                     <YAxis
@@ -341,10 +341,10 @@ export default function AgentDetailPage() {
                 Model performance on evaluation dataset
               </p>
             </div>
-            <Card className="border-border bg-card">
+            <Card className="border-border bg-muted/30">
               <CardContent className="p-6">
                 <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={accuracyData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <LineChart data={accuracyData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="batch" stroke="var(--muted-foreground)" style={{ fontSize: "12px" }} />
                     <YAxis
