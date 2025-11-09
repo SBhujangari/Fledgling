@@ -89,3 +89,15 @@ Thumbs.db
 # Vite
 .vite/
 
+# Python pipeline artifacts
+python-pipeline/slm_swap/models/
+python-pipeline/slm_swap/02_dataset/
+python-pipeline/slm_swap/04_ft/
+python-pipeline/slm_swap/05_eval/
+python-pipeline/**/__pycache__/
+python-pipeline/**/*.pyc
+python-pipeline/**/*.pyo
+python-pipeline/**/*.pyd
+python-pipeline/**/.Python
+python-pipeline/**/venv/
+python-pipeline/**/env/
