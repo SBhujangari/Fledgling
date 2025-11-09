@@ -125,8 +125,6 @@ export function Playground() {
 
       {/* Unified Testing Component */}
       <Card className="p-6 mb-8 bg-card border-border">
-        <h2 className="text-xl font-semibold text-foreground mb-6">Playground</h2>
-        
         {/* LLM and SLM Output Panels */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
@@ -140,7 +138,7 @@ export function Playground() {
               </div>
             ) : (
               <div className="min-h-[400px] flex items-center justify-center text-muted-foreground border border-border rounded-lg bg-background/50">
-                <p>LLM response will appear here</p>
+                <p className="text-lg">LLM response will appear here</p>
               </div>
             )}
           </div>
@@ -155,7 +153,7 @@ export function Playground() {
               </div>
             ) : (
               <div className="min-h-[400px] flex items-center justify-center text-muted-foreground border border-border rounded-lg bg-background/50">
-                <p>SLM response will appear here</p>
+                <p className="text-lg">SLM response will appear here</p>
               </div>
             )}
           </div>
@@ -167,14 +165,14 @@ export function Playground() {
             placeholder="Enter your prompt to compare LLM and SLM outputs..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            className="min-h-24 flex-1 bg-background text-foreground border-border w-full"
+            className="min-h-24 flex-1 bg-background text-foreground border-border w-full text-lg placeholder:text-lg"
           />
           <Button 
             onClick={handleSubmit} 
             disabled={isLoading} 
             className="self-end sm:self-end h-24 w-24 bg-primary hover:bg-primary/90 text-primary-foreground aspect-square"
           >
-            <Zap className="size-8" />
+            <Zap className="size-5" />
           </Button>
         </div>
       </Card>

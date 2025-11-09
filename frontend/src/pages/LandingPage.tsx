@@ -13,7 +13,7 @@ function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, sectionId: stri
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="min-h-screen w-full h-full bg-background">
       {/* Navigation */}
       <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
         <div className="w-full px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
