@@ -197,7 +197,7 @@ export function DashboardState() {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "var(--card)",
+                        backgroundColor: "oklch(0.998 0.005 75)",
                         border: "1px solid var(--border)",
                         borderRadius: "8px",
                         color: "var(--foreground)",
@@ -215,10 +215,10 @@ export function DashboardState() {
                     <Line
                       type="monotone"
                       dataKey="slm"
-                      stroke="var(--accent)"
+                      stroke="var(--primary-green)"
                       strokeWidth={2}
                       name="Fine-tuned SLM"
-                      dot={{ fill: "var(--accent)" }}
+                      dot={{ fill: "var(--primary-green)" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -248,7 +248,7 @@ export function DashboardState() {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "var(--card)",
+                        backgroundColor: "oklch(0.998 0.005 75)",
                         border: "1px solid var(--border)",
                         borderRadius: "8px",
                         color: "var(--foreground)",
@@ -272,10 +272,10 @@ export function DashboardState() {
                     <Line
                       type="monotone"
                       dataKey="slm"
-                      stroke="var(--accent)"
+                      stroke="var(--primary-green)"
                       strokeWidth={2}
                       name="Fine-tuned SLM"
-                      dot={{ fill: "var(--accent)" }}
+                      dot={{ fill: "var(--primary-green)" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
