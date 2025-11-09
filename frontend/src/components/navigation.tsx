@@ -6,10 +6,7 @@ export function Navigation() {
   const location = useLocation()
 
   const isActive = (path: string) => {
-    if (path === "/") {
-      return location.pathname === "/"
-    }
-    return location.pathname.startsWith(path)
+    return location.pathname === path || location.pathname.startsWith(path + "/")
   }
 
   return (
@@ -22,9 +19,9 @@ export function Navigation() {
           </Link>
           <div className="hidden items-center gap-6 md:flex">
             <Link 
-              to="/" 
+              to="/dashboard" 
               className={`text-sm font-medium transition-colors ${
-                isActive("/") 
+                isActive("/dashboard") 
                   ? "text-foreground" 
                   : "text-muted-foreground hover:text-foreground"
               }`}
@@ -32,14 +29,14 @@ export function Navigation() {
               Dashboard
             </Link>
             <Link
-              to="/history"
+              to="/testing"
               className={`text-sm font-medium transition-colors ${
-                isActive("/history") 
+                isActive("/testing") 
                   ? "text-foreground" 
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              History
+              Testing
             </Link>
             <Link
               to="/tuning"
