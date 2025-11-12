@@ -1,0 +1,26 @@
+{
+  "model_id": "unsloth/llama-3.1-8b-instruct-bnb-4bit",
+  "approach": "llama_cep_pure_peft",
+  "cep_type": "universal",
+  "timestamp": "2025-11-12T11:59:37.256301",
+  "training_duration": "0:13:19.251043",
+  "hyperparams": {
+    "lora_r": 32,
+    "lora_alpha": 64,
+    "lora_dropout": 0.05,
+    "batch_size": 1,
+    "grad_accum_steps": 8,
+    "learning_rate": 0.0002,
+    "epochs": 3,
+    "max_seq_length": 1536
+  },
+  "dataset": {
+    "train_path": "/home/gabriel/Desktop/AI_ATL25/paper_approach/datasets/hermes_train.jsonl",
+    "train_size": 100,
+    "val_path": "/home/gabriel/Desktop/AI_ATL25/paper_approach/datasets/hermes_val.jsonl",
+    "val_size": 50
+  },
+  "trainer_stats": "TrainOutput(global_step=39, training_loss=0.8580204997307215, metrics={'train_runtime': 798.9184, 'train_samples_per_second': 0.376, 'train_steps_per_second': 0.049, 'total_flos': 1.7832536590344192e+16, 'train_loss': 0.8580204997307215, 'epoch': 3.0})",
+  "cep": "<|formatting_rules|>\nCRITICAL OUTPUT RULES - FOLLOW EXACTLY:\n\n1. JSON Outputs:\n   - Output ONLY raw JSON object\n   - NO markdown blocks (no ```json or ```)\n   - NO explanatory text before or after\n   - Match parameter names EXACTLY as in signature\n   - Use proper JSON types: strings \"...\", numbers 123, arrays [...]\n\n2. XML Tool Calls:\n   - Format: <tool_call name=\"FUNC_NAME\">{\"arg\": \"value\"}</tool_call>\n   - MUST have opening tag: <tool_call name=\"...\">\n   - MUST have closing tag: </tool_call>\n   - NO self-closing tags (NOT <tool_call ... />)\n   - NO \"arguments=\" attribute\n   - JSON dict inside tags\n\n3. Common Errors to AVOID:\n   \u274c ```json{\"key\": \"value\"}``` (markdown wrapper)\n   \u274c <tool_call arguments='...'> (wrong attribute)\n   \u274c <tool_call name=\"func\" ... /> (self-closing)\n   \u274c {\"query\": \"x\"} when signature says \"q\" (param mismatch)\n   \u274c {\"country\": [\"US\",\"CA\"]} when expecting \"US,CA\" (array vs string)\n\n4. Parameter Mapping:\n   - \"q\" NOT \"query\"\n   - \"is_id\" NOT \"id\"\n   - Check signature for EXACT names\n   - Include ALL required fields\n   - Omit optional fields if not needed\n\nVERIFY: Does output match format rules? Check before responding.\n<|end_formatting_rules|>\n\n",
+  "note": "Pure Transformers + PEFT (bypassed Unsloth compatibility issue)"
+}

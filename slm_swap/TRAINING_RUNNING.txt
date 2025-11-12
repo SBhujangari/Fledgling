@@ -1,0 +1,39 @@
+========================================
+CEP TRAINING STATUS
+========================================
+
+⚠️ CURRENT STATE: BLOCKED (GPU DRIVER CRASH)
+- Script: `slm_swap/train_llama_cep_pure.py` (cached Unslo th Llama-3.1-8B, LoRA CEP)
+- Failure: CUDA error after step 3/21 → GPUs fell off the bus (`dmesg` Xid 79)
+- Symptom: `nvidia-smi` reports `Failed to initialize NVML`
+- Result: No training jobs are running; last PID is defunct
+
+IMMEDIATE RECOVERY STEPS
+1. Save work and reboot or reload the NVIDIA driver (requires host/root access).
+2. Confirm `nvidia-smi` succeeds without errors.
+3. From repo root run: `./slm_swap/resume_llama_cep.sh`
+   - This wrapper checks GPU health, ensures datasets exist, and relaunches training with `nohup`.
+4. Monitor progress: `tail -f slm_swap/logs/train_llama_cep_pure.log`
+5. If the script exits early, inspect the log and `dmesg | tail` before relaunching.
+
+TRAINING CONFIG (ONCE GPUs ARE HEALTHY)
+- Model: unsloth/llama-3.1-8b-instruct-bnb-4bit (cached)
+- LoRA: r=32, alpha=64, dropout=0.05
+- Batch size: 1 per device, grad accumulation 16 (effective 16)
+- Epochs: 3 (63 total steps)
+- Dataset: `paper_approach/datasets/hermes_{train,val}.jsonl`
+- CEP: Universal prefix (struct + toolcall)
+
+NEXT STEPS AFTER SUCCESSFUL TRAINING
+1. Evaluate CEP model on the Berkeley tracks (structured + toolcall) via `eval.py`.
+2. Compare metrics vs Azure LLM baseline using `compare.py` (delta <= 0.0 target).
+3. If gains hold, integrate adapters into the workflow tracer pipeline.
+4. Deploy workflow tracer for continuous data capture → retrain loop.
+
+LOG REFERENCES
+- Training log: `slm_swap/logs/train_llama_cep_pure.log`
+- Relaunch script: `slm_swap/resume_llama_cep.sh`
+- Health check: `python -c "import torch; print(torch.cuda.is_available())"`
+
+Status last updated: 2025-03-31 02:30 UTC
+========================================

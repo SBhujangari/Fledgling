@@ -1,0 +1,17 @@
+{
+  "dataset_name": "NousResearch/hermes-function-calling-v1",
+  "total_examples": 1893,
+  "splits": {
+    "train": 1892,
+    "val": 946,
+    "test": 946
+  },
+  "seed": 42,
+  "stratified": true,
+  "category_distribution": {
+    "single_turn": 0,
+    "multi_turn": 1893,
+    "simple_domain": 0,
+    "complex_domain": 1893
+  }
+}

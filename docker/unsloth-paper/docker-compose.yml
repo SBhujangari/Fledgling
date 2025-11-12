@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  unsloth-paper-phi:
+    build:
+      context: ../..
+      dockerfile: docker/unsloth-paper/Dockerfile
+    image: unsloth-paper:latest
+    container_name: paper-approach-phi
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0,1  # First 2 GPUs for Phi-4-mini
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - PYTHONHASHSEED=42
+      - CUBLAS_WORKSPACE_CONFIG=:4096:8
+      - MODEL_ID=microsoft/phi-4-mini
+      - APPROACH=paper
+    env_file:
+      - ../../.env
+    volumes:
+      - ../..:/workspace
+      - ./scripts:/workspace/paper_approach/scripts
+      - ../../paper_approach/datasets:/workspace/paper_approach/datasets
+      - ../../paper_approach/models:/workspace/paper_approach/models
+      - ../../paper_approach/adapters/phi:/workspace/paper_approach/adapters
+      - ../../paper_approach/eval_results:/workspace/paper_approach/eval_results
+      - ../../paper_approach/logs:/workspace/paper_approach/logs
+    shm_size: '16gb'
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0', '1']
+              capabilities: [gpu]
+    networks:
+      - paper-net
+
+  unsloth-paper-llama:
+    build:
+      context: ../..
+      dockerfile: docker/unsloth-paper/Dockerfile
+    image: unsloth-paper:latest
+    container_name: paper-approach-llama
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=2,3  # Last 2 GPUs for Llama-3.1-8B
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - PYTHONHASHSEED=42
+      - CUBLAS_WORKSPACE_CONFIG=:4096:8
+      - MODEL_ID=meta-llama/Llama-3.1-8B-Instruct
+      - APPROACH=paper
+    env_file:
+      - ../../.env
+    volumes:
+      - ../..:/workspace
+      - ./scripts:/workspace/paper_approach/scripts
+      - ../../paper_approach/datasets:/workspace/paper_approach/datasets
+      - ../../paper_approach/models:/workspace/paper_approach/models
+      - ../../paper_approach/adapters/llama:/workspace/paper_approach/adapters
+      - ../../paper_approach/eval_results:/workspace/paper_approach/eval_results
+      - ../../paper_approach/logs:/workspace/paper_approach/logs
+    shm_size: '16gb'
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['2', '3']
+              capabilities: [gpu]
+    networks:
+      - paper-net
+
+networks:
+  paper-net:
+    driver: bridge

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  fledgling:
+    build:
+      context: ../..
+      dockerfile: docker/fledgling/Dockerfile
+    image: fledgling:latest
+    container_name: fledgling-pipeline
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - PYTHONHASHSEED=42
+      - CUBLAS_WORKSPACE_CONFIG=:4096:8
+    env_file:
+      - ../../.env
+    volumes:
+      # Mount the workspace
+      - ../..:/workspace
+      # Mount models directory for persistence
+      - ../../slm_swap/models:/workspace/slm_swap/models
+      # Mount dataset directory
+      - ../../slm_swap/02_dataset:/workspace/slm_swap/02_dataset
+      # Mount fine-tuned adapters
+      - ../../slm_swap/04_ft:/workspace/slm_swap/04_ft
+      # Mount evaluation results
+      - ../../slm_swap/05_eval:/workspace/slm_swap/05_eval
+      # Mount logs
+      - ../../slm_swap/logs:/workspace/slm_swap/logs
+      # Mount Unsloth cache
+      - ../../slm_swap/unsloth_compiled_cache:/workspace/slm_swap/unsloth_compiled_cache
+    shm_size: '16gb'
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - fledgling-net
+
+networks:
+  fledgling-net:
+    driver: bridge
