@@ -1,0 +1,2 @@
+# slm_swap now reuses the repo-wide environment; install from project root.
+-r ../requirements.txt
