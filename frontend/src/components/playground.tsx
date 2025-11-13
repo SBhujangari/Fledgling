@@ -247,8 +247,32 @@ export function Playground() {
           </div>
         </div>
 
+        {/* Example Prompts */}
+        <div className="pt-6 border-t border-border">
+          <h3 className="text-sm font-medium text-foreground mb-3">Try these examples:</h3>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {[
+              "Extract customer's name, email, and order ID from: 'Hi, I'm Sarah Jones (sarah.j@email.com) and my order #12345 hasn't arrived.'",
+              "Summarize this meeting note in 3 bullet points: 'Discussed Q4 roadmap, decided to prioritize mobile app, allocate 3 engineers, launch by Dec 15.'",
+              "Convert this JSON to a markdown table: {\"name\": \"Alice\", \"age\": 28, \"city\": \"NYC\"}",
+              "Generate a professional email declining a meeting request politely due to scheduling conflicts",
+              "Analyze sentiment and extract key themes from: 'The product works great but shipping was delayed. Customer service was helpful though.'"
+            ].map((example, idx) => (
+              <Button
+                key={idx}
+                variant="outline"
+                size="sm"
+                onClick={() => setPrompt(example)}
+                className="text-xs hover:bg-primary/10 transition-colors"
+              >
+                {example.substring(0, 40)}...
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Testing Input Section */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border">
+        <div className="flex flex-col sm:flex-row gap-4">
           <Textarea
             placeholder="Enter your prompt to compare LLM and SLM outputs..."
             value={prompt}
