@@ -7,6 +7,8 @@ import TracesPage from './pages/TracesPage';
 import OperationsConsolePage from './pages/OperationsConsolePage';
 import MetricsPage from './pages/MetricsPage';
 import SLMDashboardPage from './pages/SLMDashboardPage';
+import LabAutologgerPage from './pages/LabAutologgerPage';
+import TrainingDemoPage from './pages/TrainingDemoPage';
 
 export default function App() {
   return (
@@ -20,6 +22,8 @@ export default function App() {
         <Route path="/ops" element={<OperationsConsolePage />} />
         <Route path="/metrics" element={<MetricsPage />} />
         <Route path="/slm-dashboard" element={<SLMDashboardPage />} />
+        <Route path="/lab-autologger" element={<LabAutologgerPage />} />
+        <Route path="/training-demo" element={<TrainingDemoPage />} />
       </Routes>
     </BrowserRouter>
   );

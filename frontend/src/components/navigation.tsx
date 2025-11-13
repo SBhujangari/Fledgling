@@ -21,10 +21,10 @@ export function Navigation() {
             {[
               { path: "/dashboard", label: "Dashboard" },
               { path: "/playground", label: "Playground" },
-              { path: "/traces", label: "Traces" },
               { path: "/ops", label: "Ops Console" },
-              { path: "/metrics", label: "Metrics" },
               { path: "/slm-dashboard", label: "SLM Demo" },
+              { path: "/lab-autologger", label: "Lab Autologger" },
+              { path: "/training-demo", label: "Training Demo" },
             ].map((link) => (
               <Link
                 key={link.path}
