@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRight, Zap, TrendingDown, TrendingUp, Shield, Code2, Sparkles } from "lucide-react"
+import { ArrowRight, TrendingDown, TrendingUp, Shield, Code2, Sparkles, Upload, Plus, Workflow } from "lucide-react"
 
 function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) {
   e.preventDefault()
@@ -18,7 +18,7 @@ export default function LandingPage() {
       <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
         <div className="w-full px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <Zap className="size-6 text-primary" />
+            <img src="/logo.svg" alt="Fledgling" className="size-6" />
             <span className="text-xl font-semibold text-foreground">Fledgling</span>
           </div>
           <div className="flex items-center gap-4">
@@ -39,29 +39,32 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="w-full px-4 sm:px-6 lg:px-8 py-24 md:py-32">
         <div className="flex flex-col items-center text-center gap-8 max-w-4xl mx-auto w-full">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-            <Sparkles className="size-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Save up to 90% on AI costs</span>
+          {/* Bird Logo */}
+          <div className="mb-4">
+            <img src="/logo.svg" alt="Fledgling" className="size-24" />
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold text-balance leading-tight">
-            Train Small AI Models to <span className="text-primary">Think Like Giants</span>
+            We Turn LLM Loggers into <span className="text-primary">Schema-Stable SLM Agents</span>
           </h1>
 
           <p className="text-xl text-muted-foreground text-balance max-w-2xl leading-relaxed">
-            Stop paying enterprise prices for simple tasks. Fledgling automatically trains efficient small language
-            models that match the performance of expensive LLMs—at a fraction of the cost.
+            Measure the agent, then shrink it into a small model that keeps records clean.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <Link to="/dashboard">
+            <Link to="/ops">
               <Button size="lg" className="gap-2">
-                Start Tuning <ArrowRight className="size-4" />
+                <Upload className="size-4" />
+                Import Traces
               </Button>
             </Link>
-            <Button size="lg" variant="outline">
-              Watch Demo
-            </Button>
+            <Link to="/playground">
+              <Button size="lg" variant="outline" className="gap-2">
+                <Plus className="size-4" />
+                Create Agent
+              </Button>
+            </Link>
           </div>
 
           {/* Visual Cost Comparison */}
@@ -110,33 +113,19 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">How Fledgling Works</h2>
             <p className="text-xl text-muted-foreground text-balance max-w-2xl mx-auto">
-              Three simple steps to deploy cost-effective AI models without sacrificing quality
+              Four steps to deploy schema-stable agents without sacrificing quality
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <Card>
               <CardContent className="pt-6">
                 <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Code2 className="size-6 text-primary" />
                 </div>
-                <div className="text-2xl font-bold mb-2">1. Connect</div>
+                <div className="text-2xl font-bold mb-2">1. Schema-First Logging</div>
                 <p className="text-muted-foreground leading-relaxed">
-                  Link your LangFuse account to import your existing LLM prompts and responses. We analyze your usage
-                  patterns automatically.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Sparkles className="size-6 text-primary" />
-                </div>
-                <div className="text-2xl font-bold mb-2">2. Train</div>
-                <p className="text-muted-foreground leading-relaxed">
-                  Our platform automatically fine-tunes a small language model using your LLM's outputs as training
-                  data. No ML expertise required.
+                  Start from the experiment schema: every run must conform to a clear, repeatable JSON structure.
                 </p>
               </CardContent>
             </Card>
@@ -146,10 +135,33 @@ export default function LandingPage() {
                 <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Shield className="size-6 text-primary" />
                 </div>
-                <div className="text-2xl font-bold mb-2">3. Deploy</div>
+                <div className="text-2xl font-bold mb-2">2. Agent-Level Auditing</div>
                 <p className="text-muted-foreground leading-relaxed">
-                  Deploy your optimized SLM with 95%+ accuracy retention and 90% cost savings. Monitor performance in
-                  real-time.
+                  Fledgling benchmarks the logger: schema validity, field accuracy, and edit rates per workflow.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <Sparkles className="size-6 text-primary" />
+                </div>
+                <div className="text-2xl font-bold mb-2">3. Small Models Trained for Structure</div>
+                <p className="text-muted-foreground leading-relaxed">
+                  Use big LLMs to learn the behavior, then fine-tune SLMs that specialize in "input → this schema" and stay on-rails.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <TrendingDown className="size-6 text-primary" />
+                </div>
+                <div className="text-2xl font-bold mb-2">4. Cheaper, Safer Inference by Default</div>
+                <p className="text-muted-foreground leading-relaxed">
+                  SLMs cut latency and cost and are easier to run in your own stack: security and price as side-effects of getting structure right.
                 </p>
               </CardContent>
             </Card>
@@ -161,37 +173,37 @@ export default function LandingPage() {
       <section className="py-24 w-full">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Perfect for Specialized Tasks</h2>
+            <h2 className="text-4xl font-bold mb-4">Perfect for Structured Agent Workflows</h2>
             <p className="text-xl text-muted-foreground text-balance max-w-2xl mx-auto">
-              Stop using general-purpose LLMs for specialized workflows
+              When you need reliable, repeatable JSON outputs from your AI agents
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {[
               {
-                title: "Customer Support",
-                description: "Train SLMs on your support tickets to answer common questions at 1/10th the cost",
-              },
-              {
-                title: "Content Moderation",
-                description: "Faster, cheaper content filtering trained on your specific community guidelines",
-              },
-              {
-                title: "Code Generation",
-                description: "Generate boilerplate code using models trained on your codebase patterns",
+                title: "API Call Generation",
+                description: "Convert natural language to validated API requests with 100% JSON validity",
               },
               {
                 title: "Data Extraction",
-                description: "Extract structured data from documents with domain-specific accuracy",
+                description: "Extract structured fields from documents following your exact schema",
               },
               {
-                title: "Classification",
-                description: "Classify text, images, or data with models optimized for your categories",
+                title: "Form Filling",
+                description: "Populate complex forms with accurate field-level validation",
               },
               {
-                title: "Translation",
-                description: "Domain-specific translation maintaining terminology consistency",
+                title: "Tool Calling Agents",
+                description: "Route to the right function with correct parameters every time",
+              },
+              {
+                title: "Database Operations",
+                description: "Generate SQL queries and structured updates that match your schema",
+              },
+              {
+                title: "Workflow Automation",
+                description: "Execute multi-step processes with reliable structured outputs at each stage",
               },
             ].map((useCase, index) => (
               <Card key={index} className="hover:border-primary/50 transition-colors">
@@ -209,13 +221,13 @@ export default function LandingPage() {
       <section className="border-t border-border bg-muted/30 py-24 w-full">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Cut Your AI Costs?</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Build Schema-Stable Agents?</h2>
             <p className="text-xl text-muted-foreground mb-8 text-balance">
-              Start training efficient models today. No credit card required.
+              Import your LangFuse traces and start training efficient, reliable SLMs today.
             </p>
-            <Link to="/dashboard">
+            <Link to="/ops">
               <Button size="lg" className="gap-2">
-                Get Started Free <ArrowRight className="size-4" />
+                Import Traces <ArrowRight className="size-4" />
               </Button>
             </Link>
           </div>
@@ -226,8 +238,7 @@ export default function LandingPage() {
       <footer className="border-t border-border py-12 w-full">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Zap className="size-5 text-primary" />
+            <div className="flex items-center">
               <span className="font-semibold">Fledgling</span>
             </div>
             <div className="text-sm text-muted-foreground">© 2025 Fledgling. All rights reserved.</div>

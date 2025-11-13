@@ -12,6 +12,7 @@ import examplesRouter from './routes/examples';
 import metricsRouter from './routes/metrics';
 import hfRouter from './routes/hf';
 import slmRouter from './routes/slm';
+import judgeRouter from './routes/judge';
 import { initTracer } from './tracer/core';
 
 const app = express();
@@ -43,6 +44,7 @@ app.use('/api/examples', examplesRouter);
 app.use('/api/metrics', metricsRouter);
 app.use('/api/hf', hfRouter);
 app.use('/api/slm', slmRouter);
+app.use('/api/judge', judgeRouter);
 app.use(queryRouter);
 
 export { app };
