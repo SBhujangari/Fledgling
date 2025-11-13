@@ -105,3 +105,47 @@ slm_swap/models/
 slm_swap/raw_xlam/
 Fledgling/
 backend/.hf_token
+
+# Non-essential documentation (working notes, summaries, internal docs)
+AGENT.md
+CONTEXT_ENGINEERING_ANALYSIS.md
+DEMO_GUIDE.md
+DEMO_SETUP_COMPLETE.md
+EVALUATION_IMPROVEMENTS.md
+FINE_TUNING_EVALUATION_FINDINGS.md
+FORMAT_ANALYSIS_REPORT.md
+FUNCTION_CALLING_FINETUNE.md
+HACKATHON_STATUS.md
+HYBRID_APPROACH_PLAN.md
+IMPLEMENTATION_SUMMARY.md
+NEXT_STEPS.md
+PORTABLE_SETUP_SUMMARY.md
+PROJECT_DATAFLOW.md
+QUICK_START.md
+RUN_EXPERIMENTS.md
+SETUP_COMPLETE.md
+SLM_DEMO_README.md
+SLM_VS_LLM_RESULTS.md
+TODO.md
+
+# Evaluation and test results
+eval_*.json
+*_eval_*.json
+*_results.json
+*_details.jsonl
+eval_structured_detailed_results.json
+eval_structured_results.json
+
+# Backup and test directories
+Fledgling_custom_backup/
+test/
+paper_approach/eval_results/
+
+# Python scripts for debugging/testing
+debug_*.py
+test_*.py
+convert_*.py
+parallel_eval.sh
+
+# Compiled cache
+unsloth_compiled_cache/
