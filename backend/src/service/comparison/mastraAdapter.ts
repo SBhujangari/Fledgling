@@ -22,7 +22,7 @@ export class MastraComparisonAdapter implements AgentComparisonAdapter {
     const agent = new Agent({
       name: payload.agentName,
       instructions: payload.instructions,
-      model: config.model,
+      model: config.model as any,
       tools,
     });
 

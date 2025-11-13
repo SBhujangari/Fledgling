@@ -294,7 +294,7 @@ class UnslothDDPOConfig(DDPOConfig):
     
     def __init__(
         self,
-        exp_name = 'train_phi_cep_v2',
+        exp_name = 'train_unsloth',
         run_name = '',
         seed = 3407,
         log_with = None,

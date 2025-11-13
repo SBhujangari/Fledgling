@@ -1,0 +1,1726 @@
+{
+  "summary": {
+    "total_examples": 50,
+    "exact_match_accuracy": 0.4,
+    "json_validity_rate": 1.0,
+    "tool_name_accuracy": 0.98,
+    "query_accuracy": 0.92,
+    "args_exact_match_rate": 0.4,
+    "args_keys_match_rate": 0.44,
+    "args_partial_match_avg": 0.43666666666666665,
+    "has_required_fields_rate": 0.98,
+    "functional_correctness": 0.71,
+    "semantic_correctness": 0.7506666666666667
+  },
+  "detailed_results": [
+    {
+      "example_id": 1,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch the...",
+      "expected": {
+        "arguments": {
+          "limit": 100,
+          "order": "ASC",
+          "page": 1
+        },
+        "query": "Fetch the first 100 countries in ascending order.",
+        "tool_name": "getallcountry"
+      },
+      "predicted": {
+        "arguments": {
+          "limit": 100,
+          "order": "asc"
+        },
+        "query": "Fetch the first 100 countries in ascending order.",
+        "tool_name": "getallcountry"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.6666666666666666,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "page"
+        ],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 2,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What even...",
+      "expected": {
+        "arguments": {
+          "date": "2023-03-30",
+          "sport_id": 2
+        },
+        "query": "What events are scheduled for basketball on March 30, 2023?",
+        "tool_name": "schedule_by_date"
+      },
+      "predicted": {
+        "arguments": {
+          "date": "2023-03-30",
+          "sport": "basketball"
+        },
+        "query": "What events are scheduled for basketball on March 30, 2023?",
+        "tool_name": "schedule_by_date"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.5,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "sport_id"
+        ],
+        "args_extra_keys": [
+          "sport"
+        ]
+      }
+    },
+    {
+      "example_id": 3,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What is t...",
+      "expected": {
+        "arguments": {
+          "text": "Hello world, hello universe, world"
+        },
+        "query": "What is the word frequency in the text 'Hello world, hello universe, world'?",
+        "tool_name": "word_frequency"
+      },
+      "predicted": {
+        "arguments": {
+          "text": "Hello world, hello universe, world"
+        },
+        "query": "What is the word frequency in the text 'Hello world, hello universe, world'?",
+        "tool_name": "word_frequency"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 4,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Determine...",
+      "expected": {
+        "arguments": {
+          "domain": "icloud.com"
+        },
+        "query": "Determine if 'icloud.com' is a disposable domain. Additionally, check the disposability of 'getnada.com' and 'throwawaymail.com'.",
+        "tool_name": "domain"
+      },
+      "predicted": {
+        "arguments": {
+          "domain": "icloud.com"
+        },
+        "query": "Determine if 'icloud.com' is a disposable domain. Additionally, check the disposability of 'getnada.com' and 'throwawaymail.com'.",
+        "tool_name": "domain"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 5,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I need to...",
+      "expected": {
+        "arguments": {
+          "a": 24,
+          "b": 36
+        },
+        "query": "I need to find the least common multiple of 24 and 36 for my math homework, can you help?",
+        "tool_name": "least_common_multiple"
+      },
+      "predicted": {
+        "arguments": {
+          "a": 24,
+          "b": 36
+        },
+        "query": "I need to find the least common multiple of 24 and 36 for my math homework, can you help?",
+        "tool_name": "least_common_multiple"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 6,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I want to...",
+      "expected": {
+        "arguments": {
+          "limit": 200,
+          "page": 2
+        },
+        "query": "I want to see all the country names from the radio API, but only the first 200 and from the second page, please.",
+        "tool_name": "getallcountry"
+      },
+      "predicted": {
+        "arguments": {
+          "limit": 200,
+          "page": 2
+        },
+        "query": "I want to see all the country names from the radio API, but only the first 200 and from the second page, please.",
+        "tool_name": "getallcountry"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 7,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch the...",
+      "expected": {
+        "arguments": {
+          "lang": "en",
+          "lid": 50,
+          "sp": 1
+        },
+        "query": "Fetch the prematch list from the Sports Betting API for sport ID 1, language code 'en', and league ID 50.",
+        "tool_name": "prematch"
+      },
+      "predicted": {
+        "arguments": {
+          "league_id": 50,
+          "sport_id": 1
+        },
+        "query": "Fetch the prematch list from the Sports Betting API for sport ID 1, language code 'en', and league ID 50.",
+        "tool_name": "prematch"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "lid",
+          "sp",
+          "lang"
+        ],
+        "args_extra_keys": [
+          "league_id",
+          "sport_id"
+        ]
+      }
+    },
+    {
+      "example_id": 8,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Is the st...",
+      "expected": {
+        "arguments": {
+          "s": "A man a plan a canal Panama"
+        },
+        "query": "Is the string 'A man a plan a canal Panama' a valid palindrome? What is the standard deviation of the numbers [1, 2, 3, 4, 5]? What is the resistance of a 10-meter copper wire with a cross-sectional area of 0.0001 square meters? What is the cosine similarity of the vectors [1, 2, 3] and [4, 5, 6]?",
+        "tool_name": "is_valid_palindrome"
+      },
+      "predicted": {
+        "arguments": {
+          "text": "A man a plan a canal Panama"
+        },
+        "query": "Is the string 'A man a plan a canal Panama' a valid palindrome? What is the standard deviation of the numbers [1, 2, 3, 4, 5]? What is the resistance of a 10-meter copper wire with a cross-sectional area of 0.0001 square meters? What is the cosine similarity of the vectors [1, 2, 3] and [4, 5, 6]?",
+        "tool_name": "is_valid_palindrome"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "s"
+        ],
+        "args_extra_keys": [
+          "text"
+        ]
+      }
+    },
+    {
+      "example_id": 9,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Validate ...",
+      "expected": {
+        "arguments": {
+          "vat": "DE987654321"
+        },
+        "query": "Validate the VAT number 'DE987654321' and get the details of the domain 'example.asso.nc'.",
+        "tool_name": "check_1_param"
+      },
+      "predicted": {
+        "arguments": {
+          "param": "DE987654321"
+        },
+        "query": "Validate the VAT number 'DE987654321' and get the details of the domain 'example.asso.nc'.",
+        "tool_name": "check_1_param"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "vat"
+        ],
+        "args_extra_keys": [
+          "param"
+        ]
+      }
+    },
+    {
+      "example_id": 10,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Can you l...",
+      "expected": {
+        "arguments": {},
+        "query": "Can you list the cryptocurrency exchanges and get insider holder information for Apple Inc.?",
+        "tool_name": "crypto_exchanges"
+      },
+      "predicted": {
+        "arguments": {},
+        "query": "Can you list the cryptocurrency exchanges and get insider holder information for Apple Inc.?",
+        "tool_name": "crypto_exchanges"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 11,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What are ...",
+      "expected": {
+        "arguments": {
+          "is_id": 123456
+        },
+        "query": "What are the details for the product with ID 123456?",
+        "tool_name": "get_product"
+      },
+      "predicted": {
+        "arguments": {
+          "is_id": 123456
+        },
+        "query": "What are the details for the product with ID 123456?",
+        "tool_name": "get_product"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 12,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Can you f...",
+      "expected": {
+        "arguments": {
+          "nums": [
+            3,
+            5,
+            7,
+            10,
+            12
+          ],
+          "target": 15
+        },
+        "query": "Can you find all pairs of numbers in the list [3, 5, 7, 10, 12] that sum up to 15, and calculate the bacterial population if the initial population is 1000, growth rate is 0.05, and time is 30 minutes?",
+        "tool_name": "find_pairs_with_sum"
+      },
+      "predicted": {
+        "arguments": {
+          "nums": [
+            3,
+            5,
+            7,
+            10,
+            12
+          ],
+          "target": 15
+        },
+        "query": "Can you find all pairs of numbers in the list [3, 5, 7, 10, 12] that sum up to 15, and calculate the bacterial population if the initial population is 1000, growth rate is 0.05, and time is 30 minutes?",
+        "tool_name": "find_pairs_with_sum"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 13,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Find TLE ...",
+      "expected": {
+        "arguments": {
+          "search": "NOAA 15"
+        },
+        "query": "Find TLE data for the satellite named 'NOAA 15'.",
+        "tool_name": "collection"
+      },
+      "predicted": {
+        "arguments": {
+          "name": "NOAA 15"
+        },
+        "query": "Find TLE data for the satellite named 'NOAA 15'.",
+        "tool_name": "collection"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "search"
+        ],
+        "args_extra_keys": [
+          "name"
+        ]
+      }
+    },
+    {
+      "example_id": 14,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Can you f...",
+      "expected": {
+        "arguments": {
+          "limit": 10,
+          "make": "Toyota",
+          "year": "2010"
+        },
+        "query": "Can you find car models from the year 2010 for the make 'Toyota' and limit the results to 10?",
+        "tool_name": "models"
+      },
+      "predicted": {
+        "arguments": {
+          "limit": 10,
+          "make": "Toyota",
+          "year": 2010
+        },
+        "query": "Can you find car models from the year 2010 for the make 'Toyota' and limit the results to 10?",
+        "tool_name": "models"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 15,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Search fo...",
+      "expected": {
+        "arguments": {
+          "line": "Once upon a midnight dreary, while I pondered weak and weary."
+        },
+        "query": "Search for poems that contain the line 'Once upon a midnight dreary, while I pondered weak and weary.'",
+        "tool_name": "lines_line_abs"
+      },
+      "predicted": {
+        "arguments": {
+          "line": "Once upon a midnight dreary, while I pondered weak and weary."
+        },
+        "query": "Search for poems that contain the line 'Once upon a midnight dreary, while I pondered weak and weary.'",
+        "tool_name": "lines_line_abs"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 16,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Find the ...",
+      "expected": {
+        "arguments": {
+          "lat": 40.7128,
+          "lng": -74.006
+        },
+        "query": "Find the address corresponding to the coordinates (40.7128, -74.0060) and fetch the first 10 records of type 'task'.",
+        "tool_name": "reverse_geocode"
+      },
+      "predicted": {
+        "arguments": {
+          "lat": 40.7128,
+          "lon": -74.006
+        },
+        "query": "Find the address corresponding to the coordinates (40.7128, -74.0060) and fetch the first 10 records of type 'task'.",
+        "tool_name": "reverse_geocode"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.5,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "lng"
+        ],
+        "args_extra_keys": [
+          "lon"
+        ]
+      }
+    },
+    {
+      "example_id": 17,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What will...",
+      "expected": {
+        "arguments": {
+          "initial_amount": 9000,
+          "interest_rate": 0.065,
+          "num_years": 14
+        },
+        "query": "What will $9000 become after 14 years at a 6.5% annual interest rate?",
+        "tool_name": "calculate_investment_return"
+      },
+      "predicted": {
+        "arguments": {
+          "amount": 9000,
+          "years": 14,
+          "rate": 6.5
+        },
+        "query": "What will $9000 become after 14 years at a 6.5% annual interest rate?",
+        "tool_name": "calculate_investment_return"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "num_years",
+          "interest_rate",
+          "initial_amount"
+        ],
+        "args_extra_keys": [
+          "years",
+          "amount",
+          "rate"
+        ]
+      }
+    },
+    {
+      "example_id": 18,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What is t...",
+      "expected": {
+        "arguments": {
+          "domain": "wikipedia.org"
+        },
+        "query": "What is the WHOIS record for wikipedia.org and how fast does nytimes.com load?",
+        "tool_name": "v1_whois"
+      },
+      "predicted": {
+        "arguments": {
+          "domain": "wikipedia.org"
+        },
+        "query": "What is the WHOIS record for wikipedia.org and how fast does nytimes.com load?",
+        "tool_name": "v1_whois"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 19,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Is 153 an...",
+      "expected": {
+        "arguments": {
+          "num": 153
+        },
+        "query": "Is 153 an Armstrong number?",
+        "tool_name": "is_armstrong_number"
+      },
+      "predicted": {
+        "arguments": {
+          "num": 153
+        },
+        "query": "Is 153 an Armstrong number?",
+        "tool_name": "is_armstrong_number"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 20,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch rel...",
+      "expected": {
+        "arguments": {
+          "keyword": "travel"
+        },
+        "query": "Fetch related hashtags for 'travel' and 'fitness' using the Hashtag API.",
+        "tool_name": "similar_hashtags"
+      },
+      "predicted": {
+        "arguments": {
+          "tag": "travel"
+        },
+        "query": "Fetch related hashtags for 'travel' and 'fitness' using the Hashtag API.",
+        "tool_name": "similar_hashtags"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "keyword"
+        ],
+        "args_extra_keys": [
+          "tag"
+        ]
+      }
+    },
+    {
+      "example_id": 21,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Could you...",
+      "expected": {
+        "arguments": {
+          "province": "Alberta"
+        },
+        "query": "Could you compare the gas prices in Alberta, British Columbia, and Manitoba?",
+        "tool_name": "province"
+      },
+      "predicted": {
+        "arguments": {
+          "province": "Alberta"
+        },
+        "query": "Could you compare the gas prices in Alberta, British Columbia, and Manitoba?",
+        "tool_name": "province"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 22,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Calculate...",
+      "expected": {
+        "arguments": {
+          "bpm": 100,
+          "freq1": 440,
+          "freq2": 523
+        },
+        "query": "Calculate the duration between a 440 Hz note and a 523 Hz note at a tempo of 100 BPM, and sort the numbers [3.5, 1.2, 2.7, 4.1] in descending order.",
+        "tool_name": "note_duration"
+      },
+      "predicted": {
+        "arguments": {
+          "note1": 440,
+          "note2": 523,
+          "tempo": 100
+        },
+        "query": "Calculate the duration between a 440 Hz note and a 523 Hz note at a tempo of 100 BPM, and sort the numbers [3.5, 1.2, 2.7, 4.1] in descending order.",
+        "tool_name": "note_duration"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "freq2",
+          "bpm",
+          "freq1"
+        ],
+        "args_extra_keys": [
+          "tempo",
+          "note2",
+          "note1"
+        ]
+      }
+    },
+    {
+      "example_id": 23,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Generate ...",
+      "expected": {
+        "arguments": {
+          "include_special": true,
+          "length": 15
+        },
+        "query": "Generate a password of length 15 that includes special characters.",
+        "tool_name": "generate_password"
+      },
+      "predicted": {
+        "arguments": {
+          "length": 15
+        },
+        "query": "Generate a password of length 15 that includes special characters.",
+        "tool_name": "generate_password"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.5,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "include_special"
+        ],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 24,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Retrieve ...",
+      "expected": {
+        "arguments": {
+          "req1": 17
+        },
+        "query": "Retrieve the bus detour information for route 17 and the webcams in Europe showing images and location, localized in German.",
+        "tool_name": "bus_detours"
+      },
+      "predicted": {
+        "arguments": {
+          "route": 17
+        },
+        "query": "Retrieve the bus detour information for route 17 and the webcams in Europe showing images and location, localized in German.",
+        "tool_name": "bus_detours"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "req1"
+        ],
+        "args_extra_keys": [
+          "route"
+        ]
+      }
+    },
+    {
+      "example_id": 25,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Make a QR...",
+      "expected": {
+        "arguments": {
+          "text": "WIFI:S:MyNetwork;T:WPA;P:mypass123;;"
+        },
+        "query": "Make a QR code for the Wi-Fi network 'MyNetwork' with password 'mypass123'.",
+        "tool_name": "qrcode"
+      },
+      "predicted": {
+        "arguments": {
+          "text": "MyNetwork:mypass123"
+        },
+        "query": "Make a QR code for the Wi-Fi network 'MyNetwork' with password'mypass123'.",
+        "tool_name": "qrcode"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": false,
+        "args_exact_match": false,
+        "args_keys_match": true,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "query_normalized_match": false,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 26,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What are ...",
+      "expected": {
+        "arguments": {
+          "language": "en",
+          "q": "productivity apps",
+          "region": "us"
+        },
+        "query": "What are the search results for 'productivity apps' in English and Spanish in the US and Spain?",
+        "tool_name": "search"
+      },
+      "predicted": {
+        "arguments": {
+          "country": "US",
+          "language": "en",
+          "q": "productivity apps"
+        },
+        "query": "What are the search results for 'productivity apps' in English and Spanish in the US and Spain?",
+        "tool_name": "search"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.6666666666666666,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "region"
+        ],
+        "args_extra_keys": [
+          "country"
+        ]
+      }
+    },
+    {
+      "example_id": 27,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Get detai...",
+      "expected": {
+        "arguments": {
+          "is_id": "PL123456789",
+          "part": "snippet,contentDetails"
+        },
+        "query": "Get details of the YouTube playlist with ID PL123456789 and include 'snippet,contentDetails'.",
+        "tool_name": "playlist_details"
+      },
+      "predicted": {
+        "arguments": {
+          "fields": "snippet,contentDetails",
+          "playlist_id": "PL123456789"
+        },
+        "query": "Get details of the YouTube playlist with ID PL123456789 and include'snippet,contentDetails'.",
+        "tool_name": "playlist_details"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": false,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "query_normalized_match": false,
+        "args_missing_keys": [
+          "is_id",
+          "part"
+        ],
+        "args_extra_keys": [
+          "playlist_id",
+          "fields"
+        ]
+      }
+    },
+    {
+      "example_id": 28,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Get the E...",
+      "expected": {
+        "arguments": {},
+        "query": "Get the Eredivisie standings for the current season.",
+        "tool_name": "eredivisie_standings"
+      },
+      "predicted": {
+        "arguments": {},
+        "query": "Get the Eredivisie standings for the current season.",
+        "tool_name": "eredivisie_standings"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 29,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Get the d...",
+      "expected": {
+        "arguments": {
+          "is_id": "UC8butISFwT-Wl7EV0hUK0BQ",
+          "part": "snippet"
+        },
+        "query": "Get the details of the YouTube channels 'UC8butISFwT-Wl7EV0hUK0BQ' and 'UC-lHJZR3Gqxm24_Vd_AJ5Yw', and also provide the information about the domains 'google.com' and 'facebook.com'.",
+        "tool_name": "channel_details"
+      },
+      "predicted": {
+        "arguments": {
+          "is_id": "UC8butISFwT-Wl7EV0hUK0BQ"
+        },
+        "query": "Get the details of the YouTube channels 'UC8butISFwT-Wl7EV0hUK0BQ' and 'UC-lHJZR3Gqxm24_Vd_AJ5Yw', and also provide the information about the domains 'google.com' and 'facebook.com'.",
+        "tool_name": "channel_details"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.5,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "part"
+        ],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 30,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Can you f...",
+      "expected": {
+        "arguments": {
+          "challenge_name": "DanceChallenge2023"
+        },
+        "query": "Can you fetch the info for the hashtag challenge named 'DanceChallenge2023'? I need it for my project.",
+        "tool_name": "hashtag_data_by_name"
+      },
+      "predicted": {
+        "arguments": {
+          "name": "DanceChallenge2023"
+        },
+        "query": "Can you fetch the info for the hashtag challenge named 'DanceChallenge2023'? I need it for my project.",
+        "tool_name": "hashtag_data_by_name"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "challenge_name"
+        ],
+        "args_extra_keys": [
+          "name"
+        ]
+      }
+    },
+    {
+      "example_id": 31,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Can you c...",
+      "expected": {
+        "arguments": {
+          "area_sq_m": 0.006,
+          "length_m": 300,
+          "material": "aluminum"
+        },
+        "query": "Can you calculate the resistance of an aluminum wire that's 300 meters long with a cross-sectional area of 0.006 square meters? Also, how many years does it take for light to travel 25 light years?",
+        "tool_name": "wire_resistance"
+      },
+      "predicted": {
+        "arguments": {
+          "area_sq_m": 0.006,
+          "length_m": 300,
+          "material": "aluminum"
+        },
+        "query": "Can you calculate the resistance of an aluminum wire that's 300 meters long with a cross-sectional area of 0.006 square meters? Also, how many years does it take for light to travel 25 light years?",
+        "tool_name": "wire_resistance"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 32,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What are ...",
+      "expected": {
+        "arguments": {
+          "domain": "apple.com"
+        },
+        "query": "What are the DNS records for apple.com and can you fetch the content from their support page?",
+        "tool_name": "dns"
+      },
+      "predicted": {
+        "arguments": {
+          "domain": "apple.com"
+        },
+        "query": "What are the DNS records for apple.com and can you fetch the content from their support page?",
+        "tool_name": "dns"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 33,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What are ...",
+      "expected": {
+        "arguments": {
+          "maker": "tesla"
+        },
+        "query": "What are the car models offered by Tesla? What are the top suggestions for places near Palo Alto, California?",
+        "tool_name": "get_car_models"
+      },
+      "predicted": {
+        "arguments": {
+          "brand": "Tesla"
+        },
+        "query": "What are the car models offered by Tesla? What are the top suggestions for places near Palo Alto, California?",
+        "tool_name": "get_car_models"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "maker"
+        ],
+        "args_extra_keys": [
+          "brand"
+        ]
+      }
+    },
+    {
+      "example_id": 34,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What is t...",
+      "expected": {
+        "arguments": {
+          "doubling_time": 40,
+          "growth_rate": 0.1,
+          "initial_population": 2000,
+          "time": 90
+        },
+        "query": "What is the bacterial population after 90 minutes, given an initial population of 2000 bacteria, a growth rate of 0.1, and a doubling time of 40 minutes? Also, generate the first 30 Fibonacci numbers.",
+        "tool_name": "bacterial_growth"
+      },
+      "predicted": {
+        "arguments": {
+          "doubling_time": 40,
+          "growth_rate": 0.1,
+          "initial_population": 2000,
+          "time": 90
+        },
+        "query": "What is the bacterial population after 90 minutes, given an initial population of 2000 bacteria, a growth rate of 0.1, and a doubling time of 40 minutes? Also, generate the first 30 Fibonacci numbers.",
+        "tool_name": "bacterial_growth"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 35,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: List all ...",
+      "expected": {
+        "arguments": {},
+        "query": "List all available cryptocurrency symbols.",
+        "tool_name": "crypto_symbols"
+      },
+      "predicted": {
+        "arguments": {},
+        "query": "List all available cryptocurrency symbols.",
+        "tool_name": "crypto_symbols"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 36,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Find all ...",
+      "expected": {
+        "arguments": {
+          "directory": "/home/user/pictures",
+          "extension": ".jpg"
+        },
+        "query": "Find all .jpg files in the directory '/home/user/pictures'. Also, find the first non-repeating character in the string 'racecar'.",
+        "tool_name": "find_files"
+      },
+      "predicted": {
+        "arguments": {
+          "path": "/home/user/pictures"
+        },
+        "query": "Find all.jpg files in the directory '/home/user/pictures'. Also, find the first non-repeating character in the string 'racecar'.",
+        "tool_name": "find_files"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": false,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "query_normalized_match": false,
+        "args_missing_keys": [
+          "directory",
+          "extension"
+        ],
+        "args_extra_keys": [
+          "path"
+        ]
+      }
+    },
+    {
+      "example_id": 37,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Update th...",
+      "expected": {
+        "arguments": {
+          "info1": "T1234",
+          "info2": "1000.00",
+          "info3": "USD"
+        },
+        "query": "Update the financial records with the transaction details: transaction ID 'T1234', amount '1000.00', and currency 'USD'.",
+        "tool_name": "update"
+      },
+      "predicted": {
+        "arguments": {
+          "amount": "1000.00",
+          "currency": "USD",
+          "transaction_id": "T1234"
+        },
+        "query": "Update the financial records with the transaction details: transaction ID 'T1234', amount '1000.00', and currency 'USD'.",
+        "tool_name": "update"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "info1",
+          "info2",
+          "info3"
+        ],
+        "args_extra_keys": [
+          "transaction_id",
+          "currency",
+          "amount"
+        ]
+      }
+    },
+    {
+      "example_id": 38,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I'm curio...",
+      "expected": {
+        "arguments": {
+          "region": "AU"
+        },
+        "query": "I'm curious about the music trends in Australia on Spotify, could you possibly look that up?",
+        "tool_name": "get_home_page_overview"
+      },
+      "predicted": {
+        "arguments": {
+          "country": "AU"
+        },
+        "query": "I'm curious about the music trends in Australia on Spotify, could you possibly look that up?",
+        "tool_name": "get_home_page_overview"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "region"
+        ],
+        "args_extra_keys": [
+          "country"
+        ]
+      }
+    },
+    {
+      "example_id": 39,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I need to...",
+      "expected": {
+        "arguments": {
+          "ano": "2022",
+          "estado": "SP"
+        },
+        "query": "I need to know the holidays in S\u00e3o Paulo state for the year 2022. Additionally, what are the non-working days in the USA for the same year?",
+        "tool_name": "feriados_dos_estados"
+      },
+      "predicted": {
+        "arguments": {
+          "ano": 2022,
+          "uf": "SP"
+        },
+        "query": "I need to know the holidays in S\u00e3o Paulo state for the year 2022. Additionally, what are the non-working days in the USA for the same year?",
+        "tool_name": "feriados_dos_estados"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.5,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "estado"
+        ],
+        "args_extra_keys": [
+          "uf"
+        ]
+      }
+    },
+    {
+      "example_id": 40,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What are ...",
+      "expected": {
+        "arguments": {
+          "woeid": 44418
+        },
+        "query": "What are the trending topics on Twitter in London, and retrieve data for the company with LinkedIn URL 'https://www.linkedin.com/company/google/'?",
+        "tool_name": "trend_id"
+      },
+      "predicted": {
+        "arguments": {
+          "city": "London"
+        },
+        "query": "What are the trending topics on Twitter in London, and retrieve data for the company with LinkedIn URL 'https://www.linkedin.com/company/google/'?",
+        "tool_name": "trend_id"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "woeid"
+        ],
+        "args_extra_keys": [
+          "city"
+        ]
+      }
+    },
+    {
+      "example_id": 41,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Is the st...",
+      "expected": {
+        "arguments": {
+          "s": "12321"
+        },
+        "query": "Is the string '12321' a palindrome? Is the string 'Hello World' a palindrome?",
+        "tool_name": "is_valid_palindrome"
+      },
+      "predicted": {
+        "arguments": {
+          "text": "12321"
+        },
+        "query": "Is the string '12321' a palindrome? Is the string 'Hello World' a palindrome?",
+        "tool_name": "is_valid_palindrome"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "s"
+        ],
+        "args_extra_keys": [
+          "text"
+        ]
+      }
+    },
+    {
+      "example_id": 42,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Check if ...",
+      "expected": {
+        "arguments": {
+          "str1": "abcd",
+          "str2": "cdab"
+        },
+        "query": "Check if 'abcd' is a rotation of 'cdab'.",
+        "tool_name": "is_rotation"
+      },
+      "predicted": {
+        "arguments": {
+          "s1": "abcd",
+          "s2": "cdab"
+        },
+        "query": "Check if 'abcd' is a rotation of 'cdab'.",
+        "tool_name": "is_rotation"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "str1",
+          "str2"
+        ],
+        "args_extra_keys": [
+          "s1",
+          "s2"
+        ]
+      }
+    },
+    {
+      "example_id": 43,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What hote...",
+      "expected": {
+        "arguments": {
+          "hotel_type_id": "67890"
+        },
+        "query": "What hotel types are available for ID 67890 on Booking.com?",
+        "tool_name": "list_of_hotel_types"
+      },
+      "predicted": {
+        "arguments": {
+          "is_id": 67890
+        },
+        "query": "What hotel types are available for ID 67890 on Booking.com?",
+        "tool_name": "list_of_hotel_types"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "hotel_type_id"
+        ],
+        "args_extra_keys": [
+          "is_id"
+        ]
+      }
+    },
+    {
+      "example_id": 44,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Count the...",
+      "expected": {
+        "arguments": {
+          "lst": [
+            5,
+            "cat",
+            "cat",
+            5,
+            "dog",
+            "dog",
+            "dog"
+          ]
+        },
+        "query": "Count the occurrences of each element in the list [5, 'cat', 'cat', 5, 'dog', 'dog', 'dog']. Also, check if '{[(])}' has valid parentheses.",
+        "tool_name": "count_occurrences"
+      },
+      "predicted": {
+        "error": "invalid_json",
+        "raw": "{\"arguments\": {\"lst\": [5, 'cat', 'cat', 5, 'dog', 'dog', 'dog']}, \"query\": \"Count the occurrences of each element in the list [5, 'cat', 'cat', 5, 'dog', 'dog', 'dog']. Also, check if '{[(])}' has valid parentheses.\", \"tool_name\": \"count_occurrences\"}"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": false,
+        "query_match": false,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": false
+      }
+    },
+    {
+      "example_id": 45,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch inf...",
+      "expected": {
+        "arguments": {
+          "t": "112233"
+        },
+        "query": "Fetch information for the movie with Trakt.tv ID '112233' and the TV show with ID '445566'.",
+        "tool_name": "get_by_trakt_tv_id"
+      },
+      "predicted": {
+        "arguments": {
+          "t": "112233"
+        },
+        "query": "Fetch information for the movie with Trakt.tv ID '112233' and the TV show with ID '445566'.",
+        "tool_name": "get_by_trakt_tv_id"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 46,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Get keywo...",
+      "expected": {
+        "arguments": {
+          "q": "artificial intelligence"
+        },
+        "query": "Get keyword suggestions for 'artificial intelligence'. Additionally, fetch suggestions for 'climate change' and 'blockchain technology'.",
+        "tool_name": "autosuggest"
+      },
+      "predicted": {
+        "arguments": {
+          "q": "artificial intelligence"
+        },
+        "query": "Get keyword suggestions for 'artificial intelligence'. Additionally, fetch suggestions for 'climate change' and 'blockchain technology'.",
+        "tool_name": "autosuggest"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 47,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Check the...",
+      "expected": {
+        "arguments": {
+          "is_id": "987654321"
+        },
+        "query": "Check the status of a proxy with ID '987654321' and create a QR code for the status page URL.",
+        "tool_name": "retrieve_proxy_information"
+      },
+      "predicted": {
+        "arguments": {
+          "is_id": "987654321"
+        },
+        "query": "Check the status of a proxy with ID '987654321' and create a QR code for the status page URL.",
+        "tool_name": "retrieve_proxy_information"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    },
+    {
+      "example_id": 48,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Check if ...",
+      "expected": {
+        "arguments": {
+          "arr": [
+            -1,
+            3,
+            5,
+            5,
+            1,
+            -5
+          ]
+        },
+        "query": "Check if the list [-1, 3, 5, 5, 1, -5] has an equilibrium index",
+        "tool_name": "find_equilibrium_index"
+      },
+      "predicted": {
+        "arguments": {
+          "nums": [
+            -1,
+            3,
+            5,
+            5,
+            1,
+            -5
+          ]
+        },
+        "query": "Check if the list [-1, 3, 5, 5, 1, -5] has an equilibrium index",
+        "tool_name": "find_equilibrium_index"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "arr"
+        ],
+        "args_extra_keys": [
+          "nums"
+        ]
+      }
+    },
+    {
+      "example_id": 49,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Please pr...",
+      "expected": {
+        "arguments": {
+          "kun": "\u3064\u304d"
+        },
+        "query": "Please provide the kunyomi reading for '\u6708' and fetch entries related to 'ancient civilizations'.",
+        "tool_name": "kunyomi_reading"
+      },
+      "predicted": {
+        "arguments": {
+          "kanji": "\u6708"
+        },
+        "query": "Please provide the kunyomi reading for '\u6708' and fetch entries related to 'ancient civilizations'.",
+        "tool_name": "kunyomi_reading"
+      },
+      "metrics": {
+        "exact_match": false,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": false,
+        "args_keys_match": false,
+        "args_partial_match": 0.0,
+        "has_required_fields": true,
+        "args_missing_keys": [
+          "kun"
+        ],
+        "args_extra_keys": [
+          "kanji"
+        ]
+      }
+    },
+    {
+      "example_id": 50,
+      "prompt": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Find the ...",
+      "expected": {
+        "arguments": {
+          "nums": [
+            15,
+            25,
+            35,
+            45,
+            55
+          ]
+        },
+        "query": "Find the next greater element for each number in the list [15, 25, 35, 45, 55]. Also, calculate the future value of a $7000 investment with an annual interest rate of 9% over 40 years.",
+        "tool_name": "find_next_greater_element"
+      },
+      "predicted": {
+        "arguments": {
+          "nums": [
+            15,
+            25,
+            35,
+            45,
+            55
+          ]
+        },
+        "query": "Find the next greater element for each number in the list [15, 25, 35, 45, 55]. Also, calculate the future value of a $7000 investment with an annual interest rate of 9% over 40 years.",
+        "tool_name": "find_next_greater_element"
+      },
+      "metrics": {
+        "exact_match": true,
+        "json_valid": true,
+        "tool_name_match": true,
+        "query_match": true,
+        "args_exact_match": true,
+        "args_keys_match": true,
+        "args_partial_match": 1.0,
+        "has_required_fields": true,
+        "args_missing_keys": [],
+        "args_extra_keys": []
+      }
+    }
+  ]
+}

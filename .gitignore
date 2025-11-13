@@ -58,6 +58,15 @@ tmp/
 temp/
 *.tmp
 
+python-pipeline/slm_swap/02_dataset/
+python-pipeline/slm_swap/04_ft/
+slm_swap/04_ft/
+slm_swap/02_dataset/
+storage/dummy_langfuse_traces.jsonl
+slm_swap/logs/
+*.safetensors
+adapter_model.safetensors
+
 # OS files
 .DS_Store
 .DS_Store?

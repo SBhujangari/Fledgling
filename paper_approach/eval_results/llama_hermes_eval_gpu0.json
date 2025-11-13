@@ -1,0 +1,16 @@
+{
+  "model_id": "unsloth/llama-3.1-8b-instruct-bnb-4bit",
+  "adapter_path": "slm_swap/04_ft/adapter_llama_hermes",
+  "dataset_path": "/tmp/eval_chunk_00",
+  "num_examples": 12,
+  "timestamp": "2025-11-12T14:13:24.334546",
+  "metrics": {
+    "valid_json_rate": 0.0,
+    "name_match_rate": 0.0,
+    "args_exact_match_rate": 0.0,
+    "args_field_precision": 0.0,
+    "args_field_recall": 0.0,
+    "args_field_f1": 0.0
+  },
+  "approach": "FUNCTION_CALLING_FINETUNE_paper"
+}

@@ -7,6 +7,11 @@ import toolsRouter from './routes/tools';
 import compareRouter from './routes/compare';
 import modelsRouter from './routes/models';
 import queryRouter from './routes/query';
+import trainingRouter from './routes/training';
+import examplesRouter from './routes/examples';
+import metricsRouter from './routes/metrics';
+import hfRouter from './routes/hf';
+import slmRouter from './routes/slm';
 import { initTracer } from './tracer/core';
 
 const app = express();
@@ -33,6 +38,11 @@ app.use('/api', tracesRouter);
 app.use('/api/tools', toolsRouter);
 app.use('/api/compare', compareRouter);
 app.use('/api/models', modelsRouter);
+app.use('/api/training', trainingRouter);
+app.use('/api/examples', examplesRouter);
+app.use('/api/metrics', metricsRouter);
+app.use('/api/hf', hfRouter);
+app.use('/api/slm', slmRouter);
 app.use(queryRouter);
 
 export { app };

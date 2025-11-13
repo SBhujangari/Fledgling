@@ -38,6 +38,24 @@ tail -f slm_swap/logs/train_llama_cep_pure.log
 
 ---
 
+## Demo-Focused Integration Plan (Parity → Swap)
+
+1. **Langfuse → Dataset Automation (in progress)**
+   - Ship `python-pipeline/slm_swap/langfuse_dataset.py` (done) with offline `--trace-json` support plus `dummy_agent_workflow.py`/`run_dummy_pipeline.py` so we can demo the full flow without credentials.
+   - Expose a backend webhook so new traces auto-trigger dataset refreshes with the right agent_id filter.
+   - Surface latest dataset snapshot + trace counts in the Ops console so operators know when parity data is fresh enough to rerun evals.
+2. **Pipeline Kickoff Endpoint**
+   - Backend route that shells the Python pipeline (`eval.py → compare.py → train_unsloth.py` when the decision gate flips) using the refreshed dataset path.
+   - Persist Langfuse trace IDs for every pipeline run so UI can deep-link to evidence.
+3. **Swap-Ready Demo**
+   - Load the freshly trained adapter into the Mastra demo agent, expose Azure vs SLM toggles, and show Langfuse traces proving the SLM beats the LLM.
+   - Add a guardrailed fallback router (SLM primary, hosted LLM on failure) with metrics streaming back into Langfuse.
+4. **Operator Checklist**
+   - Inline in the dashboard: dataset timestamp, eval deltas, cost savings, and a single "Promote SLM" action that writes to `slm_swap/model_selection.json`.
+   - Target: live demo where we capture traces, auto-build the dataset, retrain, and flip the switch in <15 minutes.
+
+---
+
 ## Once Training Completes
 
 ### Step 1: Run Automated Evaluation (~5 minutes)
@@ -192,6 +210,14 @@ watch -n 1 nvidia-smi
 # Check process
 ps aux | grep train_llama_cep_pure.py
 ```
+
+### Dashboard + Progress Script
+```bash
+# Start the progress monitor (updates terminal + dashboard JSON)
+python slm_swap/finetune_progress.py --watch
+```
+- Writes snapshots to `slm_swap/logs/finetune_progress.json`.
+- Backend `/api/training/status` and the Tuning dashboard read this file to show ETA, remaining steps, and GPU info.
 
 ### When Training Completes
 

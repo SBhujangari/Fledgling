@@ -199,6 +199,21 @@ The framework supports **iterative experimentation** across four key capabilitie
   6. Evaluate on all test suites
   7. Generate comparison report
 
+---
+
+### 8. Dummy Agent Workflow + Pipeline Smoke Test
+- **Dummy trace generator:** `python-pipeline/slm_swap/dummy_agent_workflow.py`
+  - Consumes `datasets/dummy_agent_requests.jsonl`
+  - Emits Langfuse-style traces (JSONL) whose prompts/completions match the eval datasets
+  - Optional `--emit-to-langfuse` pushes the same traces into a live Langfuse workspace
+- **Dataset builder (offline mode):** `python-pipeline/slm_swap/langfuse_dataset.py --trace-json <file>`
+  - Converts the dummy traces into structured/tool-call JSONLs without needing API credentials
+  - Enhanced tool-span detection so Mastra/Javascript + Python spans both map to tool observations
+- **Dry-run training:** `python-pipeline/slm_swap/train_unsloth.py --dry-run`
+  - Validates dataset wiring, computes dataset stats, logs to Langfuse, and skips GPU-heavy steps
+- **One-button smoke test:** `python-pipeline/slm_swap/run_dummy_pipeline.py --clean`
+  - Orchestrates the entire loop (dummy traces → dataset → dry-run FT) so we can exercise the Langfuse → fine-tune path locally before touching Azure/SLM resources
+
 #### Execution Time
 - **Setup:** ~5 minutes
 - **Training:** ~60-90 minutes (parallel)
@@ -210,6 +225,13 @@ The framework supports **iterative experimentation** across four key capabilitie
 cd /home/gabriel/Desktop/AI_ATL25
 ./run_phase1_experiment.sh
 ```
+
+#### Fine-Tuning Progress Monitor
+- **Script:** `slm_swap/finetune_progress.py`
+- **Usage:** `python slm_swap/finetune_progress.py --watch`
+  - Streams progress (steps, ETA, GPU summary) in the terminal.
+  - Writes `slm_swap/logs/finetune_progress.json`, which feeds the backend endpoint (`GET /api/training/status`) and the Tuning dashboard card.
+- Supports single-shot mode for snapshots or long-running watch mode for continuous dashboard updates.
 
 ---
 

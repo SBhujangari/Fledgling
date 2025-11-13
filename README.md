@@ -1,8 +1,14 @@
 # Fledgling
 
-**Making task inference cheaper and more reliable**
+**Agent-parity + swap kit: prove your specialist SLM beats the hosted LLM, then flip traffic**
 
-Drop-in observability and fine-tuning tools for AI agents. Instrument your agents with 10 lines of code (soon a click of a button), get full trace visibility, and fine-tune local SLMs (like Phi-4-mini) to replace expensive LLMs.
+Fledgling isn't a generic "fine-tuning platform." We capture live agent traces, build eval harnesses around your exact tools and JSON schemas, auto-curate the right datasets, train a specialist SLM (on whatever trainer you prefer), and ship a swap-readiness report plus a deterministic drop-in runner. Think: **measure → prove parity → ship.**
+
+### How we're different
+- **Unit of value:** Everyone else is model-centric ("let us fine-tune/RL your model"). Fledgling is agent-centric—parity on your real workflow (tool calls, JSON I/O, routers) with acceptance tests and canary rollout built in.
+- **What we deliver:** Others hand you a fine-tuned model + generic evals. Fledgling hands you a ParityBench report (tool-use accuracy, schema conformance, latency/cost deltas), auto-curated datasets from your traces, and a swap kit (schema enforcer, fallback router, deterministic seeds/logging).
+- **Training backend stance:** Others pull you into their trainer/cloud. Fledgling is vendor-agnostic—we can call OpenPipe/ART, Predibase RFT, H2O Studio, Databricks/MosaicML, or your Unsloth/QLoRA rig. We own the measurement, dataset ops, and swap logic.
+- **Determinism & governance:** MLOps stacks exist, but none are purpose-built for agent-parity gating. We enforce deterministic guardrails (schema + tool contracts + seeds), traceable provenance, and pass/fail gates tied to your acceptance criteria before we reroute live traffic.
 
 > **⚠️ Note:** The TypeScript frontend/backend and Python fine-tuning pipeline are **not yet fully integrated**. They can be run independently but don't communicate automatically. Integration is in progress.
 
@@ -15,10 +21,13 @@ Drop-in observability and fine-tuning tools for AI agents. Instrument your agent
 
 ### Python Pipeline (Fine-Tuning - Standalone)
 - **`python-pipeline/slm_swap/`** - Evaluation and training scripts
+  - `dummy_agent_workflow.py` - Generate Langfuse-style traces without a live agent
+  - `langfuse_dataset.py` - Harvest Langfuse traces into structured/tool-call splits
   - `prepare_data.py` - Dataset preparation
   - `eval.py` - Model evaluation harness
   - `compare.py` - Decision logic for fine-tuning
   - `train_unsloth.py` - QLoRA fine-tuning with Unsloth (multi-GPU support)
+  - `run_dummy_pipeline.py` - One-click dummy workflow → dataset → dry-run FT tester
 
 ## Quick Start
 
@@ -106,6 +115,34 @@ Drop-in observability and fine-tuning tools for AI agents. Instrument your agent
      --out 04_ft/adapter_structured
    ```
 
+## Dummy Workflow & Pipeline Smoke Test
+
+Need to prove the Langfuse → dataset → fine-tune loop works without touching Azure or a GPU? Run the fully offline harness:
+
+```bash
+python python-pipeline/slm_swap/run_dummy_pipeline.py --clean --count 12
+```
+
+This command:
+1. Synthesizes dummy agent traces whose prompts/completions match our eval datasets (`dummy_agent_workflow.py`).
+2. Converts those traces into structured/tool-call JSONLs via `langfuse_dataset.py --trace-json ...`.
+3. Executes `train_unsloth.py --dry-run` for both tracks so the whole loop is validated without loading a model.
+4. Writes `slm_swap/logs/finetune_progress.json`, which powers the frontend tuning dashboard via `/api/training/status`.
+
+To push the dummy traces into a real Langfuse workspace, rerun the generator with `--emit-to-langfuse` and real `LANGFUSE_*` vars, then re-run `langfuse_dataset.py` without `--trace-json`.
+
+## Langfuse Trace Console (Original Fledgling UI)
+
+Need a quick view into raw Langfuse spans before kicking off the pipeline?
+
+```bash
+cd Fledgling
+npm install          # once
+npm run dev          # installs backend/frontend (via postinstall) then starts http://localhost:5173
+```
+
+The console automatically loads `/api/traces`, summarizes runs/observations, and links directly to each Langfuse trace so you can audit data before exporting it into the fine-tuning pipeline.
+
 ## Multi-GPU Fine-Tuning (Unsloth QLoRA)
 
 ### Quick Start
@@ -192,6 +229,22 @@ GitHub blocks binaries >100 MB, so push adapters, eval logs, or datasets to Hugg
      --auto-subdir
    ```
 
+4. **Automatic promotion after eval** – `slm_swap/compare_llm_slm.py` can now publish an adapter as soon as it meets your acceptance gap. Example (uploads only if the SLM matches or beats the LLM on the selected split):
+
+   ```bash
+   python slm_swap/compare_llm_slm.py \
+     --track structured \
+     --split eval100 \
+     --adapter slm_swap/04_ft/adapter_structured \
+     --auto-upload-repo kineticdrive/test \
+     --auto-upload-repo-type space \
+     --auto-upload-path-in-repo adapter_structured \
+     --auto-upload-auto-subdir \
+     --auto-upload-gap-threshold 0.0
+   ```
+
+   Pass `--auto-upload-token hf_xxx` (or rely on `HUGGING_FACE_HUB_TOKEN`), tweak `--auto-upload-commit-message`, or raise the `--auto-upload-gap-threshold` if you only want to ship once the local model leads by a margin.
+
 ## Usage
 
 ### Instrument Your Agent
@@ -243,7 +296,7 @@ const result = await tracedAgent.generate('Hello world');
 │ • Agent management   │        │ • train_unsloth.py       │
 │ • SLM selector       │        │ • HF upload              │
 └──────────────────────┘        └──────────────────────────┘
-         ⚠️ NOT YET CONNECTED ⚠️
+         Langfuse dataset exporter pipes traces → Python splits
 ```
 
 ## Current Integration Status
@@ -256,9 +309,11 @@ const result = await tracedAgent.generate('Hello world');
 | SLM selector dashboard | ✅ Working | Choose base model or adapter |
 | HF upload helper | ✅ Working | Token management + upload API |
 | Dataset preparation | ✅ Working | Python script functional |
+| Langfuse → dataset export | ✅ Working | `langfuse_dataset.py` builds structured/tool-call splits from traces |
+| Dummy pipeline smoke test | ✅ Working | `run_dummy_pipeline.py` exercises traces → dataset → dry-run FT |
 | Model evaluation | ✅ Working | Azure and SLM eval tested |
 | Fine-tuning pipeline | ✅ Working | Unsloth QLoRA multi-GPU ready |
-| **UI → Python integration** | ❌ Not integrated | Manual export/import required |
+| **UI → Python integration** | ⚠️ Partial | Dataset export is automated; orchestration + adapter loading still manual |
 | **Auto-trigger training** | ❌ Not integrated | Must run Python scripts manually |
 | **Load trained models in UI** | ❌ Not integrated | No adapter loading in TypeScript |
 | **Cost comparison** | ⚠️ Partial | Calculator exists, needs trained models |
@@ -275,16 +330,18 @@ const result = await tracedAgent.generate('Hello world');
 
 **Python Pipeline:**
 - Prepare training datasets
+- Harvest Langfuse traces into structured/tool-call JSONLs
+- Generate offline dummy traces (`dummy_agent_workflow.py`) and convert them via `langfuse_dataset.py --trace-json`
 - Evaluate Azure LLM vs local SLM
 - Decide if fine-tuning is needed
 - Train QLoRA adapters (multi-GPU)
 - Re-evaluate fine-tuned models
+- Dry-run the training loop (`train_unsloth.py --dry-run`) for fast wiring tests
 
-**To connect them yourself:**
-1. Export traces from Langfuse as JSONL
-2. Transform to training format
-3. Run Python pipeline
-4. Load adapters in your agent code manually
+**To connect them yourself (until we wire the UI triggers):**
+1. Run `python python-pipeline/slm_swap/langfuse_dataset.py --agent-id <id> --output-root python-pipeline/slm_swap/02_dataset`
+2. Run the Python pipeline (eval → compare → optional train)
+3. Load adapters in your agent code manually
 
 ## Tech Stack
 

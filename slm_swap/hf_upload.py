@@ -57,6 +57,12 @@ def parse_args() -> argparse.Namespace:
         help="Create/ensure the repo is private.",
     )
     parser.add_argument(
+        "--space-sdk",
+        choices=("gradio", "streamlit", "docker", "static"),
+        default=None,
+        help="Space SDK to use when creating a new Space (ignored for existing Spaces).",
+    )
+    parser.add_argument(
         "--token",
         default=None,
         help="Hugging Face token. Falls back to $HUGGING_FACE_HUB_TOKEN or cached login.",
@@ -103,15 +109,37 @@ def resolve_token(provided: Optional[str]) -> str:
     return token
 
 
-def ensure_repo(api: HfApi, repo_id: str, repo_type: str, private: bool) -> None:
+def ensure_repo(
+    api: HfApi,
+    repo_id: str,
+    repo_type: str,
+    private: bool,
+    space_sdk: Optional[str] = None,
+) -> None:
     try:
-        api.create_repo(
-            repo_id=repo_id,
-            repo_type=repo_type,
-            private=private,
-            exist_ok=True,
-        )
+        api.repo_info(repo_id=repo_id, repo_type=repo_type)
+        return
     except HfHubHTTPError as exc:
+        if exc.response is None or exc.response.status_code != 404:
+            raise SystemExit(f"Failed to inspect repo {repo_id!r}: {exc}") from exc
+
+    create_kwargs = {
+        "repo_id": repo_id,
+        "repo_type": repo_type,
+        "private": private,
+        "exist_ok": True,
+    }
+    if repo_type == "space":
+        if not space_sdk:
+            raise SystemExit(
+                "Space repo does not exist yet. Pass --space-sdk (gradio/streamlit/docker/static) "
+                "so it can be created."
+            )
+        create_kwargs["space_sdk"] = space_sdk
+
+    try:
+        api.create_repo(**create_kwargs)
+    except HfHubHTTPError as exc:  # pragma: no cover - network errors only
         raise SystemExit(f"Failed to create repo {repo_id!r}: {exc}") from exc
 
 
@@ -167,7 +195,7 @@ def main() -> None:
     token = resolve_token(args.token)
     api = HfApi(token=token)
 
-    ensure_repo(api, args.repo_id, args.repo_type, args.private)
+    ensure_repo(api, args.repo_id, args.repo_type, args.private, args.space_sdk)
 
     for input_path in args.paths:
         path = Path(input_path).expanduser().resolve()

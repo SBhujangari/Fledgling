@@ -1,0 +1,13 @@
+{
+  "total_runs": 5,
+  "successful_runs": 5,
+  "failed_runs": 0,
+  "avg_latency_ms": 4376.71594619751,
+  "total_cost_usd": 0,
+  "accuracy": 0.4,
+  "tool_name_accuracy": 0.98,
+  "query_preservation": 0.92,
+  "json_validity": 1.0,
+  "functional_correctness": 0.71,
+  "semantic_correctness": 0.75
+}

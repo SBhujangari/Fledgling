@@ -5,13 +5,19 @@ Note: Claude will NOT include itself in git commits
 
 Goal
 
-Decide if a local SLM can replace a hosted LLM for:
+Prove—using real agent traces—that our specialist SLM can replace the hosted LLM on:
 
-Track A — Structured JSON output
-
+Track A — Structured JSON output  
 Track B — Tool-calling (single tool with JSON args)
 
-Only fine-tune if the SLM underperforms the hosted LLM.
+We only touch fine-tuning if the SLM underperforms, and every promotion requires documented parity deltas (tool accuracy, schema conformance, latency/cost). The win condition is **SLM ≥ LLM** on acceptance metrics plus a deterministic swap kit.
+
+Agent-Parity Stance
+
+- Capture live agent traces first (via `withMastraTracing()` + Langfuse), not synthetic prompts.
+- Convert those traces into tiny structured/tool-call splits with `python langfuse_dataset.py --agent-id <...> --output-root python-pipeline/slm_swap/02_dataset`.
+- Run eval → compare → train loops with Langfuse traces attached so we can replay every decision.
+- Stay vendor-agnostic on training backends; this repo uses Unsloth QLoRA but anything pluggable works.
 
 Constraints
 
@@ -39,6 +45,7 @@ slm_swap/
     adapter_toolcall/
   05_eval/
   models/                      # local SLM checkpoint
+  langfuse_dataset.py          # convert Langfuse traces into dataset splits
   agent.md
   README.md
 Environment
@@ -81,6 +88,10 @@ Tool-calling
 prompt: concise instruction + tool signature + user text.
 completion: exactly one wrapper
 <tool_call name="TOOL_NAME">{ ...json args... }</tool_call>.
+
+`langfuse_dataset.py` emits both tracks automatically from Langfuse traces (prompts already include the necessary formatting + deterministic completions).
+
+Need test data fast? Run `python python-pipeline/slm_swap/dummy_agent_workflow.py --out-json storage/dummy_langfuse_traces.jsonl --agent-id dummy-agent` followed by `python python-pipeline/slm_swap/langfuse_dataset.py --trace-json storage/dummy_langfuse_traces.jsonl --agent-id dummy-agent --output-root python-pipeline/slm_swap/02_dataset/dummy_langfuse`.
 
 Initial source: small splits derived from Salesforce/xlam-function-calling-60k. Keep splits small and consistent.
 

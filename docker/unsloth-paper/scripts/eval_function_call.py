@@ -119,6 +119,24 @@ def format_prompt(example):
     return prompt
 
 
+def conversations_to_messages(example):
+    """Convert Hermes conversations format to chat template messages format"""
+    conversations = example.get("conversations", [])
+    messages = []
+
+    for msg in conversations:
+        from_role = msg.get("from", "")
+        value = msg.get("value", "")
+
+        if from_role == "system":
+            messages.append({"role": "system", "content": value})
+        elif from_role == "human":
+            messages.append({"role": "user", "content": value})
+        # Skip gpt response - we want model to generate it
+
+    return messages
+
+
 def main():
     parser = argparse.ArgumentParser(description="Evaluate function calling model")
     parser.add_argument("--model-id", type=str, default=os.getenv("MODEL_ID", "microsoft/phi-4-mini"),
@@ -173,11 +191,12 @@ def main():
     details = []
 
     for example in tqdm(dataset, desc="Evaluating"):
-        # Format prompt
+        # Format prompt using the SAME format as training (custom tokens, not chat template)
         prompt = format_prompt(example)
 
-        # Generate
+        # Generate (use raw text tokenization, NOT chat template)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
         with torch.no_grad():
             outputs = model.generate(
                 **inputs,
@@ -186,11 +205,11 @@ def main():
                 temperature=0.0,
                 top_p=1.0,
                 top_k=0,
+                pad_token_id=tokenizer.pad_token_id
             )
 
-        # Decode
+        # Decode and extract response after <|assistant|> marker
         output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        # Extract only the assistant response
         response = output_text.split("<|assistant|>")[-1].strip()
 
         # Extract JSON from prediction

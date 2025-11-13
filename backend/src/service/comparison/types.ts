@@ -3,7 +3,7 @@ import type { UsageStats, FinetuneSample } from '../../types/finetune';
 
 export interface ModelEndpointConfig {
   provider: 'openai' | 'mastra' | 'local' | (string & {});
-  model: string;
+  model: string | unknown;
   label?: string;
   temperature?: number;
   metadata?: Record<string, unknown>;
@@ -35,7 +35,7 @@ export interface AgentExecutionResult {
 
 export interface ComparisonRunRecord {
   label: string;
-  model: string;
+  model: string | null;
   provider: string;
   result: AgentExecutionResult;
   fallback?: boolean;

@@ -5,7 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from typing import Dict, List
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Dict, List, Optional
 
 import openai
 from clients import build_client
@@ -183,6 +187,79 @@ def run_comparison_eval(
     return summary
 
 
+def auto_upload_adapter(
+    adapter_path: str,
+    repo_id: str,
+    repo_type: str,
+    *,
+    commit_message: str,
+    path_in_repo: Optional[str],
+    private: bool,
+    auto_subdir: bool,
+    branch: Optional[str],
+    token: Optional[str],
+    space_sdk: Optional[str],
+) -> None:
+    """Invoke hf_upload.py to publish the adapter once eval passes."""
+
+    script_path = Path(__file__).with_name("hf_upload.py").resolve()
+    if not script_path.exists():
+        raise FileNotFoundError(f"Missing uploader script at {script_path}")
+
+    adapter_abs = Path(adapter_path).expanduser().resolve()
+    if not adapter_abs.exists():
+        raise FileNotFoundError(f"Adapter path does not exist: {adapter_path}")
+
+    args = [
+        sys.executable,
+        str(script_path),
+        str(adapter_abs),
+        "--repo-id",
+        repo_id,
+        "--repo-type",
+        repo_type,
+        "--commit-message",
+        commit_message,
+    ]
+
+    if private:
+        args.append("--private")
+
+    if auto_subdir:
+        args.append("--auto-subdir")
+
+    if path_in_repo:
+        args.extend(["--path-in-repo", path_in_repo])
+
+    if branch:
+        args.extend(["--branch", branch])
+
+    if space_sdk:
+        args.extend(["--space-sdk", space_sdk])
+
+    env = os.environ.copy()
+    if token:
+        env["HUGGING_FACE_HUB_TOKEN"] = token
+
+    print(
+        f"[auto-upload] Publishing {adapter_abs} -> {repo_type}:{repo_id} "
+        f"(path_in_repo={path_in_repo or '<default>'})"
+    )
+    result = subprocess.run(
+        args,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            "Auto-upload failed with exit code "
+            f"{result.returncode}:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+        )
+    print("[auto-upload] Upload complete.")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Compare LLM vs SLM to determine if fine-tuning is needed."
@@ -193,6 +270,59 @@ def main():
     parser.add_argument("--out", help="Path for comparison results JSON")
     parser.add_argument(
         "--adapter", help="Optional LoRA adapter directory for the SLM"
+    )
+    parser.add_argument(
+        "--auto-upload-repo",
+        help=(
+            "Automatically push the evaluated adapter to this Hugging Face repo "
+            "when the performance gap is within the threshold."
+        ),
+    )
+    parser.add_argument(
+        "--auto-upload-repo-type",
+        choices=("model", "dataset", "space"),
+        default="space",
+        help="Repo type for automatic upload (default: space).",
+    )
+    parser.add_argument(
+        "--auto-upload-gap-threshold",
+        type=float,
+        default=0.0,
+        help=(
+            "Upload adapters when performance_gap <= threshold "
+            "(default 0.0 means upload once SLM matches/exceeds the LLM)."
+        ),
+    )
+    parser.add_argument(
+        "--auto-upload-path-in-repo",
+        help="Optional destination subdirectory inside the repo.",
+    )
+    parser.add_argument(
+        "--auto-upload-branch",
+        help="Optional branch name to push to when uploading.",
+    )
+    parser.add_argument(
+        "--auto-upload-commit-message",
+        help="Override the default auto-upload commit message.",
+    )
+    parser.add_argument(
+        "--auto-upload-private",
+        action="store_true",
+        help="Mark the repo as private when creating it (existing repos unaffected).",
+    )
+    parser.add_argument(
+        "--auto-upload-auto-subdir",
+        action="store_true",
+        help="Mirror the local folder name in the repo (adds --auto-subdir).",
+    )
+    parser.add_argument(
+        "--auto-upload-token",
+        help="Explicit Hugging Face token to use for uploads (optional).",
+    )
+    parser.add_argument(
+        "--auto-upload-space-sdk",
+        choices=("gradio", "streamlit", "docker", "static"),
+        help="SDK to set if a new Space repo must be created.",
     )
     args = parser.parse_args()
 
@@ -223,6 +353,38 @@ def main():
             slm_adapter=args.adapter,
         )
         trace.update(metadata={"summary": summary})
+
+    if args.auto_upload_repo and not args.adapter:
+        raise SystemExit("--auto-upload-repo requires --adapter to be set.")
+
+    if args.auto_upload_repo:
+        final_gap = float(summary.get("performance_gap", 1.0))
+        if final_gap <= args.auto_upload_gap_threshold:
+            commit_message = (
+                args.auto_upload_commit_message
+                or (
+                    f"auto upload {args.track} adapter after eval "
+                    f"{datetime.now(timezone.utc).isoformat()}"
+                )
+            )
+            auto_upload_adapter(
+                adapter_path=args.adapter,
+                repo_id=args.auto_upload_repo,
+                repo_type=args.auto_upload_repo_type,
+                commit_message=commit_message,
+                path_in_repo=args.auto_upload_path_in_repo,
+                private=args.auto_upload_private,
+                auto_subdir=args.auto_upload_auto_subdir,
+                branch=args.auto_upload_branch,
+                token=args.auto_upload_token,
+                space_sdk=args.auto_upload_space_sdk,
+            )
+        else:
+            print(
+                "[auto-upload] Skipped because performance gap "
+                f"{final_gap:.2%} exceeds threshold "
+                f"{args.auto_upload_gap_threshold:.2%}."
+            )
 
 
 if __name__ == "__main__":

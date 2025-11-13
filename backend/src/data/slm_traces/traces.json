@@ -1,0 +1,418 @@
+{
+  "runs": [
+    {
+      "traceId": "trace-1763032443168",
+      "agentId": "slm-api-generator",
+      "name": "api-generation",
+      "status": "completed",
+      "startedAt": "2025-11-13T11:14:03.168685",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch the first 100 countries in ascending order.\nChosen tool: getallcountry\nArguments should mirror the assistant's recommendation.",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "adapter": "slm_swap/04_ft/adapter_llama_structured",
+        "task": "structured_api_generation",
+        "valid_json": true,
+        "parsed_result": {
+          "arguments": {
+            "limit": 100,
+            "order": "asc"
+          },
+          "query": "Fetch the first 100 countries in ascending order.",
+          "tool_name": "getallcountry"
+        },
+        "latency_ms": 4283.31446647644
+      },
+      "completedAt": "2025-11-13T11:14:07.452087",
+      "output": "{\"arguments\": {\"limit\": 100, \"order\": \"asc\"}, \"query\": \"Fetch the first 100 countries in ascending order.\", \"tool_name\": \"getallcountry\"}",
+      "latencyMs": 4283.31446647644,
+      "costUsd": 0.0
+    },
+    {
+      "traceId": "trace-1763032447952",
+      "agentId": "slm-api-generator",
+      "name": "api-generation",
+      "status": "completed",
+      "startedAt": "2025-11-13T11:14:07.952336",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What is the word frequency in the text 'Hello world, hello universe, world'?\nChosen tool: word_frequency\nArguments should mirror the assistant's recommendation.",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "adapter": "slm_swap/04_ft/adapter_llama_structured",
+        "task": "structured_api_generation",
+        "valid_json": true,
+        "parsed_result": {
+          "arguments": {
+            "text": "Hello world, hello universe, world"
+          },
+          "query": "What is the word frequency in the text 'Hello world, hello universe, world'?",
+          "tool_name": "word_frequency"
+        },
+        "latency_ms": 4351.047039031982
+      },
+      "completedAt": "2025-11-13T11:14:12.303423",
+      "output": "{\"arguments\": {\"text\": \"Hello world, hello universe, world\"}, \"query\": \"What is the word frequency in the text 'Hello world, hello universe, world'?\", \"tool_name\": \"word_frequency\"}",
+      "latencyMs": 4351.047039031982,
+      "costUsd": 0.0
+    },
+    {
+      "traceId": "trace-1763032452803",
+      "agentId": "slm-api-generator",
+      "name": "api-generation",
+      "status": "completed",
+      "startedAt": "2025-11-13T11:14:12.803608",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I need to find the least common multiple of 24 and 36 for my math homework, can you help?\nChosen tool: least_common_multiple\nArguments should mirror the assistant's recommendation.",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "adapter": "slm_swap/04_ft/adapter_llama_structured",
+        "task": "structured_api_generation",
+        "valid_json": true,
+        "parsed_result": {
+          "arguments": {
+            "a": 24,
+            "b": 36
+          },
+          "query": "I need to find the least common multiple of 24 and 36 for my math homework, can you help?",
+          "tool_name": "least_common_multiple"
+        },
+        "latency_ms": 5028.082370758057
+      },
+      "completedAt": "2025-11-13T11:14:17.831730",
+      "output": "{\"arguments\": {\"a\": 24, \"b\": 36}, \"query\": \"I need to find the least common multiple of 24 and 36 for my math homework, can you help?\", \"tool_name\": \"least_common_multiple\"}",
+      "latencyMs": 5028.082370758057,
+      "costUsd": 0.0
+    },
+    {
+      "traceId": "trace-1763032458331",
+      "agentId": "slm-api-generator",
+      "name": "api-generation",
+      "status": "completed",
+      "startedAt": "2025-11-13T11:14:18.331927",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What events are scheduled for basketball on March 30, 2023?\nChosen tool: schedule_by_date\nArguments should mirror the assistant's recommendation.",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "adapter": "slm_swap/04_ft/adapter_llama_structured",
+        "task": "structured_api_generation",
+        "valid_json": true,
+        "parsed_result": {
+          "arguments": {
+            "date": "2023-03-30",
+            "sport": "basketball"
+          },
+          "query": "What events are scheduled for basketball on March 30, 2023?",
+          "tool_name": "schedule_by_date"
+        },
+        "latency_ms": 4809.688329696655
+      },
+      "completedAt": "2025-11-13T11:14:23.141661",
+      "output": "{\"arguments\": {\"date\": \"2023-03-30\", \"sport\": \"basketball\"}, \"query\": \"What events are scheduled for basketball on March 30, 2023?\", \"tool_name\": \"schedule_by_date\"}",
+      "latencyMs": 4809.688329696655,
+      "costUsd": 0.0
+    },
+    {
+      "traceId": "trace-1763032463641",
+      "agentId": "slm-api-generator",
+      "name": "api-generation",
+      "status": "completed",
+      "startedAt": "2025-11-13T11:14:23.641891",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Determine if 'icloud.com' is a disposable domain.\nChosen tool: domain\nArguments should mirror the assistant's recommendation.",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "adapter": "slm_swap/04_ft/adapter_llama_structured",
+        "task": "structured_api_generation",
+        "valid_json": true,
+        "parsed_result": {
+          "arguments": {
+            "domain": "icloud.com"
+          },
+          "query": "Determine if 'icloud.com' is a disposable domain.",
+          "tool_name": "domain"
+        },
+        "latency_ms": 3411.447525024414
+      },
+      "completedAt": "2025-11-13T11:14:27.053382",
+      "output": "{\"arguments\": {\"domain\": \"icloud.com\"}, \"query\": \"Determine if 'icloud.com' is a disposable domain.\", \"tool_name\": \"domain\"}",
+      "latencyMs": 3411.447525024414,
+      "costUsd": 0.0
+    }
+  ],
+  "observations": [
+    {
+      "observationId": "trace-1763032443168-obs-1",
+      "traceId": "trace-1763032443168",
+      "type": "generation",
+      "name": "slm-inference",
+      "status": "OK",
+      "startedAt": "2025-11-13T11:14:03.168685",
+      "completedAt": "2025-11-13T11:14:07.452118",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch the first 100 countries in ascending order.\nChosen tool: getallcountry\nArguments should mirror the assistant's recommendation.",
+      "output": "{\"arguments\": {\"limit\": 100, \"order\": \"asc\"}, \"query\": \"Fetch the first 100 countries in ascending order.\", \"tool_name\": \"getallcountry\"}",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "valid_json": true,
+        "has_required_fields": true
+      }
+    },
+    {
+      "observationId": "trace-1763032447952-obs-1",
+      "traceId": "trace-1763032447952",
+      "type": "generation",
+      "name": "slm-inference",
+      "status": "OK",
+      "startedAt": "2025-11-13T11:14:07.952336",
+      "completedAt": "2025-11-13T11:14:12.303440",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What is the word frequency in the text 'Hello world, hello universe, world'?\nChosen tool: word_frequency\nArguments should mirror the assistant's recommendation.",
+      "output": "{\"arguments\": {\"text\": \"Hello world, hello universe, world\"}, \"query\": \"What is the word frequency in the text 'Hello world, hello universe, world'?\", \"tool_name\": \"word_frequency\"}",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "valid_json": true,
+        "has_required_fields": true
+      }
+    },
+    {
+      "observationId": "trace-1763032452803-obs-1",
+      "traceId": "trace-1763032452803",
+      "type": "generation",
+      "name": "slm-inference",
+      "status": "OK",
+      "startedAt": "2025-11-13T11:14:12.803608",
+      "completedAt": "2025-11-13T11:14:17.831748",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I need to find the least common multiple of 24 and 36 for my math homework, can you help?\nChosen tool: least_common_multiple\nArguments should mirror the assistant's recommendation.",
+      "output": "{\"arguments\": {\"a\": 24, \"b\": 36}, \"query\": \"I need to find the least common multiple of 24 and 36 for my math homework, can you help?\", \"tool_name\": \"least_common_multiple\"}",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "valid_json": true,
+        "has_required_fields": true
+      }
+    },
+    {
+      "observationId": "trace-1763032458331-obs-1",
+      "traceId": "trace-1763032458331",
+      "type": "generation",
+      "name": "slm-inference",
+      "status": "OK",
+      "startedAt": "2025-11-13T11:14:18.331927",
+      "completedAt": "2025-11-13T11:14:23.141684",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What events are scheduled for basketball on March 30, 2023?\nChosen tool: schedule_by_date\nArguments should mirror the assistant's recommendation.",
+      "output": "{\"arguments\": {\"date\": \"2023-03-30\", \"sport\": \"basketball\"}, \"query\": \"What events are scheduled for basketball on March 30, 2023?\", \"tool_name\": \"schedule_by_date\"}",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "valid_json": true,
+        "has_required_fields": true
+      }
+    },
+    {
+      "observationId": "trace-1763032463641-obs-1",
+      "traceId": "trace-1763032463641",
+      "type": "generation",
+      "name": "slm-inference",
+      "status": "OK",
+      "startedAt": "2025-11-13T11:14:23.641891",
+      "completedAt": "2025-11-13T11:14:27.053400",
+      "input": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Determine if 'icloud.com' is a disposable domain.\nChosen tool: domain\nArguments should mirror the assistant's recommendation.",
+      "output": "{\"arguments\": {\"domain\": \"icloud.com\"}, \"query\": \"Determine if 'icloud.com' is a disposable domain.\", \"tool_name\": \"domain\"}",
+      "metadata": {
+        "model": "llama-3.1-8b-structured",
+        "valid_json": true,
+        "has_required_fields": true
+      }
+    }
+  ],
+  "generations": [
+    {
+      "generationId": "trace-1763032443168-gen-1",
+      "traceId": "trace-1763032443168",
+      "observationId": "trace-1763032443168-obs-1",
+      "model": "llama-3.1-8b-structured",
+      "prompt": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch the first 100 countries in ascending order.\nChosen tool: getallcountry\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "completion": "{\"arguments\": {\"limit\": 100, \"order\": \"asc\"}, \"query\": \"Fetch the first 100 countries in ascending order.\", \"tool_name\": \"getallcountry\"}",
+      "usage": {
+        "inputTokens": 80,
+        "outputTokens": 16,
+        "totalTokens": 96
+      },
+      "metadata": {
+        "inference_time_ms": 4283.31446647644,
+        "adapter_path": "slm_swap/04_ft/adapter_llama_structured"
+      }
+    },
+    {
+      "generationId": "trace-1763032447952-gen-1",
+      "traceId": "trace-1763032447952",
+      "observationId": "trace-1763032447952-obs-1",
+      "model": "llama-3.1-8b-structured",
+      "prompt": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What is the word frequency in the text 'Hello world, hello universe, world'?\nChosen tool: word_frequency\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "completion": "{\"arguments\": {\"text\": \"Hello world, hello universe, world\"}, \"query\": \"What is the word frequency in the text 'Hello world, hello universe, world'?\", \"tool_name\": \"word_frequency\"}",
+      "usage": {
+        "inputTokens": 87,
+        "outputTokens": 23,
+        "totalTokens": 110
+      },
+      "metadata": {
+        "inference_time_ms": 4351.047039031982,
+        "adapter_path": "slm_swap/04_ft/adapter_llama_structured"
+      }
+    },
+    {
+      "generationId": "trace-1763032452803-gen-1",
+      "traceId": "trace-1763032452803",
+      "observationId": "trace-1763032452803-obs-1",
+      "model": "llama-3.1-8b-structured",
+      "prompt": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I need to find the least common multiple of 24 and 36 for my math homework, can you help?\nChosen tool: least_common_multiple\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "completion": "{\"arguments\": {\"a\": 24, \"b\": 36}, \"query\": \"I need to find the least common multiple of 24 and 36 for my math homework, can you help?\", \"tool_name\": \"least_common_multiple\"}",
+      "usage": {
+        "inputTokens": 93,
+        "outputTokens": 27,
+        "totalTokens": 120
+      },
+      "metadata": {
+        "inference_time_ms": 5028.082370758057,
+        "adapter_path": "slm_swap/04_ft/adapter_llama_structured"
+      }
+    },
+    {
+      "generationId": "trace-1763032458331-gen-1",
+      "traceId": "trace-1763032458331",
+      "observationId": "trace-1763032458331-obs-1",
+      "model": "llama-3.1-8b-structured",
+      "prompt": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What events are scheduled for basketball on March 30, 2023?\nChosen tool: schedule_by_date\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "completion": "{\"arguments\": {\"date\": \"2023-03-30\", \"sport\": \"basketball\"}, \"query\": \"What events are scheduled for basketball on March 30, 2023?\", \"tool_name\": \"schedule_by_date\"}",
+      "usage": {
+        "inputTokens": 85,
+        "outputTokens": 18,
+        "totalTokens": 103
+      },
+      "metadata": {
+        "inference_time_ms": 4809.688329696655,
+        "adapter_path": "slm_swap/04_ft/adapter_llama_structured"
+      }
+    },
+    {
+      "generationId": "trace-1763032463641-gen-1",
+      "traceId": "trace-1763032463641",
+      "observationId": "trace-1763032463641-obs-1",
+      "model": "llama-3.1-8b-structured",
+      "prompt": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Determine if 'icloud.com' is a disposable domain.\nChosen tool: domain\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "completion": "{\"arguments\": {\"domain\": \"icloud.com\"}, \"query\": \"Determine if 'icloud.com' is a disposable domain.\", \"tool_name\": \"domain\"}",
+      "usage": {
+        "inputTokens": 80,
+        "outputTokens": 13,
+        "totalTokens": 93
+      },
+      "metadata": {
+        "inference_time_ms": 3411.447525024414,
+        "adapter_path": "slm_swap/04_ft/adapter_llama_structured"
+      }
+    }
+  ],
+  "samples": [
+    {
+      "traceId": "trace-1763032443168",
+      "agentId": "slm-api-generator",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Fetch the first 100 countries in ascending order.\nChosen tool: getallcountry\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "steps": [
+        {
+          "type": "generation",
+          "content": "{\"arguments\": {\"limit\": 100, \"order\": \"asc\"}, \"query\": \"Fetch the first 100 countries in ascending order.\", \"tool_name\": \"getallcountry\"}"
+        }
+      ],
+      "finalResponse": "{\"arguments\": {\"limit\": 100, \"order\": \"asc\"}, \"query\": \"Fetch the first 100 countries in ascending order.\", \"tool_name\": \"getallcountry\"}"
+    },
+    {
+      "traceId": "trace-1763032447952",
+      "agentId": "slm-api-generator",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What is the word frequency in the text 'Hello world, hello universe, world'?\nChosen tool: word_frequency\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "steps": [
+        {
+          "type": "generation",
+          "content": "{\"arguments\": {\"text\": \"Hello world, hello universe, world\"}, \"query\": \"What is the word frequency in the text 'Hello world, hello universe, world'?\", \"tool_name\": \"word_frequency\"}"
+        }
+      ],
+      "finalResponse": "{\"arguments\": {\"text\": \"Hello world, hello universe, world\"}, \"query\": \"What is the word frequency in the text 'Hello world, hello universe, world'?\", \"tool_name\": \"word_frequency\"}"
+    },
+    {
+      "traceId": "trace-1763032452803",
+      "agentId": "slm-api-generator",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: I need to find the least common multiple of 24 and 36 for my math homework, can you help?\nChosen tool: least_common_multiple\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "steps": [
+        {
+          "type": "generation",
+          "content": "{\"arguments\": {\"a\": 24, \"b\": 36}, \"query\": \"I need to find the least common multiple of 24 and 36 for my math homework, can you help?\", \"tool_name\": \"least_common_multiple\"}"
+        }
+      ],
+      "finalResponse": "{\"arguments\": {\"a\": 24, \"b\": 36}, \"query\": \"I need to find the least common multiple of 24 and 36 for my math homework, can you help?\", \"tool_name\": \"least_common_multiple\"}"
+    },
+    {
+      "traceId": "trace-1763032458331",
+      "agentId": "slm-api-generator",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: What events are scheduled for basketball on March 30, 2023?\nChosen tool: schedule_by_date\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "steps": [
+        {
+          "type": "generation",
+          "content": "{\"arguments\": {\"date\": \"2023-03-30\", \"sport\": \"basketball\"}, \"query\": \"What events are scheduled for basketball on March 30, 2023?\", \"tool_name\": \"schedule_by_date\"}"
+        }
+      ],
+      "finalResponse": "{\"arguments\": {\"date\": \"2023-03-30\", \"sport\": \"basketball\"}, \"query\": \"What events are scheduled for basketball on March 30, 2023?\", \"tool_name\": \"schedule_by_date\"}"
+    },
+    {
+      "traceId": "trace-1763032463641",
+      "agentId": "slm-api-generator",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Return a JSON object with keys query, tool_name, arguments describing the API call.\nQuery: Determine if 'icloud.com' is a disposable domain.\nChosen tool: domain\nArguments should mirror the assistant's recommendation."
+        }
+      ],
+      "steps": [
+        {
+          "type": "generation",
+          "content": "{\"arguments\": {\"domain\": \"icloud.com\"}, \"query\": \"Determine if 'icloud.com' is a disposable domain.\", \"tool_name\": \"domain\"}"
+        }
+      ],
+      "finalResponse": "{\"arguments\": {\"domain\": \"icloud.com\"}, \"query\": \"Determine if 'icloud.com' is a disposable domain.\", \"tool_name\": \"domain\"}"
+    }
+  ]
+}

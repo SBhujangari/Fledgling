@@ -92,18 +92,20 @@ async function runModel(
   const adapter = resolveAdapter(config);
 
   if (!adapter) {
+    const modelLabel = typeof config.model === 'string' ? config.model : null;
     return {
       label,
-      model: config.model,
+      model: modelLabel,
       provider: config.provider,
       result: { error: `No adapter registered for provider ${config.provider}` },
     };
   }
 
   const result = await adapter.run(config, payload);
+  const modelLabel = typeof config.model === 'string' ? config.model : null;
   return {
     label: config.label ?? label,
-    model: config.model,
+    model: modelLabel,
     provider: config.provider,
     result,
     fallback: Boolean(config.metadata?.fallback),

@@ -18,26 +18,24 @@ export function Navigation() {
             <span className="text-xl font-semibold text-foreground">Fledgling</span>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
-            <Link 
-              to="/dashboard" 
-              className={`text-sm font-medium transition-colors ${
-                isActive("/dashboard") 
-                  ? "text-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/playground"
-              className={`text-sm font-medium transition-colors ${
-                isActive("/playground")
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Playground
-            </Link>
+            {[
+              { path: "/dashboard", label: "Dashboard" },
+              { path: "/playground", label: "Playground" },
+              { path: "/traces", label: "Traces" },
+              { path: "/ops", label: "Ops Console" },
+              { path: "/metrics", label: "Metrics" },
+              { path: "/slm-dashboard", label: "SLM Demo" },
+            ].map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`text-sm font-medium transition-colors ${
+                  isActive(link.path) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -52,4 +50,3 @@ export function Navigation() {
     </nav>
   )
 }
-
