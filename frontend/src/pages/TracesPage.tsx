@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { Navigation } from "@/components/navigation"
+import { TraceVisualization } from "@/components/TraceVisualization"
 import { api } from "@/lib/api"
 import type { ConversationMessage, ExampleWorkflow, FinetuneSample, TracesResponse } from "@/types"
 
@@ -37,11 +38,24 @@ const defaultAgentForm: AgentFormState = {
 export default function TracesPage() {
   const [agentForm, setAgentForm] = useState<AgentFormState>(defaultAgentForm)
   const [registerMessage, setRegisterMessage] = useState<string | null>(null)
+  const [selectedTraceId, setSelectedTraceId] = useState<string | null>(null)
 
   const { data, error, isLoading, refetch, dataUpdatedAt } = useQuery({
     queryKey: ["traces-console"],
     queryFn: () => api.getTraces(),
     refetchOnWindowFocus: false,
+  })
+
+  const { data: localTracesData } = useQuery({
+    queryKey: ["local-traces"],
+    queryFn: () => api.getLocalTraces(),
+    refetchInterval: 10000, // Refresh every 10 seconds
+  })
+
+  const { data: selectedTrace } = useQuery({
+    queryKey: ["local-trace", selectedTraceId],
+    queryFn: () => (selectedTraceId ? api.getLocalTraceById(selectedTraceId) : null),
+    enabled: !!selectedTraceId,
   })
 
   const registerAgentMutation = useMutation({
@@ -426,6 +440,76 @@ export default function TracesPage() {
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">No conversation captured yet.</p>
+          )}
+        </section>
+
+        {/* Local Agent Traces with Embedded Visualization */}
+        <section className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold">Local Agent Traces (Self-Hosted)</h2>
+              <p className="text-sm text-muted-foreground">
+                View detailed agent execution traces without requiring external Langfuse connection
+              </p>
+            </div>
+            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
+              No API Key Required
+            </span>
+          </div>
+
+          {localTracesData && localTracesData.traces.length > 0 ? (
+            <>
+              {/* Trace List */}
+              {!selectedTraceId && (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {localTracesData.traces.map((trace) => (
+                    <button
+                      key={trace.id}
+                      onClick={() => setSelectedTraceId(trace.id)}
+                      className="rounded-2xl border border-border bg-card p-5 text-left transition-all hover:border-primary hover:bg-primary/5"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                            {trace.observations?.length || 0} steps
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(trace.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold">{trace.name}</h3>
+                        <p className="font-mono text-xs text-muted-foreground">{trace.id.substring(0, 24)}...</p>
+                        {trace.metadata && (
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            {trace.metadata.agent_id && <p>Agent: {trace.metadata.agent_id}</p>}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Trace Visualization */}
+              {selectedTraceId && selectedTrace && (
+                <div>
+                  <button
+                    onClick={() => setSelectedTraceId(null)}
+                    className="mb-4 flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+                  >
+                    ← Back to trace list
+                  </button>
+                  <TraceVisualization trace={selectedTrace} />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="rounded-2xl border border-border bg-card p-8 text-center">
+              <p className="text-muted-foreground">
+                No local traces found. Run an agent to generate traces or add traces to{" "}
+                <code className="rounded bg-muted px-2 py-1 font-mono text-xs">storage/dummy_langfuse_traces.jsonl</code>
+              </p>
+            </div>
           )}
         </section>
 

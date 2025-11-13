@@ -104,6 +104,65 @@ router.post('/train', async (req: Request, res: Response) => {
   }
 });
 
+// New endpoint to get detailed trace data from local storage
+router.get('/traces/local', async (req: Request, res: Response) => {
+  try {
+    const tracesPath = path.resolve(process.cwd(), '..', 'storage', 'dummy_langfuse_traces.jsonl');
+
+    if (!fs.existsSync(tracesPath)) {
+      return res.json({ traces: [] });
+    }
+
+    const fileContent = fs.readFileSync(tracesPath, 'utf-8');
+    const traces: any[] = [];
+
+    for (const line of fileContent.split('\n')) {
+      if (!line.trim()) continue;
+      try {
+        traces.push(JSON.parse(line));
+      } catch (err) {
+        console.error('Failed to parse trace line:', err);
+      }
+    }
+
+    res.json({ traces });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: message });
+  }
+});
+
+// New endpoint to get a single trace by ID
+router.get('/traces/local/:traceId', async (req: Request, res: Response) => {
+  try {
+    const { traceId } = req.params;
+    const tracesPath = path.resolve(process.cwd(), '..', 'storage', 'dummy_langfuse_traces.jsonl');
+
+    if (!fs.existsSync(tracesPath)) {
+      return res.status(404).json({ error: 'Trace not found' });
+    }
+
+    const fileContent = fs.readFileSync(tracesPath, 'utf-8');
+
+    for (const line of fileContent.split('\n')) {
+      if (!line.trim()) continue;
+      try {
+        const trace = JSON.parse(line);
+        if (trace.id === traceId) {
+          return res.json(trace);
+        }
+      } catch (err) {
+        console.error('Failed to parse trace line:', err);
+      }
+    }
+
+    res.status(404).json({ error: 'Trace not found' });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: message });
+  }
+});
+
 export default router;
 
 function buildMockTracePayload(): TransformResult & { samples: FinetuneSample[] } {

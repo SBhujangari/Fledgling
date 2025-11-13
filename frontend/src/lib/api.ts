@@ -82,6 +82,11 @@ export const api = {
     return fetchAPI<TracesResponse>(`/api/traces${queryParams}`)
   },
 
+  // Local traces (self-hosted, no Langfuse key needed)
+  getLocalTraces: () => fetchAPI<{ traces: any[] }>("/api/traces/local"),
+
+  getLocalTraceById: (traceId: string) => fetchAPI<any>(`/api/traces/local/${traceId}`),
+
   train: () =>
     fetchAPI<{ status: string }>("/api/train", {
       method: "POST",
